@@ -2,6 +2,14 @@ const http = require('http');
 
 
 function getData(authCode) {
+    var data = JSON.stringify({
+        grant_type: 'authorization_code',
+        code: authCode,
+        redirect_uri: "https://csed-server.herokuapp.com/callback",
+        client_id: "295687b97d8f4da38afd639684a8a60e",
+        client_secret: "e82a2d8d37d1436fa01d9ad332a1e00b"
+    });
+    
     var options = {
         hostname: 'https://accounts.spotify.com',
         port: 443,
@@ -12,13 +20,7 @@ function getData(authCode) {
           'Content-Length': data.length
         }
     };
-    var data = JSON.stringify({
-        grant_type: 'authorization_code',
-        code: authCode,
-        redirect_uri: "https://csed-server.herokuapp.com/callback",
-        client_id: "295687b97d8f4da38afd639684a8a60e",
-        client_secret: "e82a2d8d37d1436fa01d9ad332a1e00b"
-    });
+
 
     var req = http.request(options, res => {
         console.log(`statusCode: ${res.statusCode}`)
