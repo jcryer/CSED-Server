@@ -26,6 +26,7 @@ router.get('/login', function(req, res) {
   
   router.get('/callback', function(req, res) {
     console.log(req.query.code);
+    test.getData(req.query.code);
     res.redirect('landing.html');
   });
 
