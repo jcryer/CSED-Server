@@ -9,11 +9,10 @@ function getData(authCode) {
         client_id: "295687b97d8f4da38afd639684a8a60e",
         client_secret: "e82a2d8d37d1436fa01d9ad332a1e00b"
     });
-    
+
     var options = {
-        hostname: 'https://accounts.spotify.com',
+        hostname: 'https://accounts.spotify.com/api/token',
         port: 443,
-        path: '/api/token',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
