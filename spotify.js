@@ -17,9 +17,8 @@ function getData(authCode) {
     '&client_secret=' + 'e82a2d8d37d1436fa01d9ad332a1e00b';
 
     var options = {
-        hostname: 'accounts.spotify.com',
+        hostname: 'accounts.spotify.com/api/token',
         port: 80,
-        path: '/api/token',
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -30,7 +29,7 @@ function getData(authCode) {
 
     var req = http.request(options, res => {
         console.log(`statusCode: ${res.statusCode}`)
-      
+        console.log(res.body);
         res.on('data', d => {
           process.stdout.write(d);
           console.dir(d);
