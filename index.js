@@ -13,10 +13,6 @@ router.get("/test", function (req, res, next) {
     res.send("Big test hours");
 });
 
-router.get("/test", function (req, res, next) {
-    res.send("Big test hours");
-});
-
 router.get('/login', function(req, res) {
     var scopes = 'user-read-private user-read-email';
     res.redirect('https://accounts.spotify.com/authorize' +
