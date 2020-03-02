@@ -1,6 +1,8 @@
 express = require("express");
 fs = require("fs");
 
+const test = require("./spotify");
+
 var my_client_id = "295687b97d8f4da38afd639684a8a60e";
 var redirect_uri = "https://csed-server.herokuapp.com/callback";
 router = express.Router();
