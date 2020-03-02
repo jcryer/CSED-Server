@@ -12,7 +12,7 @@ function getData(authCode) {
           'Content-Length': data.length
         }
     };
-    const data = JSON.stringify({
+    var data = JSON.stringify({
         grant_type: 'authorization_code',
         code: authCode,
         redirect_uri: "https://csed-server.herokuapp.com/callback",
@@ -20,7 +20,7 @@ function getData(authCode) {
         client_secret: "e82a2d8d37d1436fa01d9ad332a1e00b"
     });
 
-    const req = http.request(options, res => {
+    var req = http.request(options, res => {
         console.log(`statusCode: ${res.statusCode}`)
       
         res.on('data', d => {
