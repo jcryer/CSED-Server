@@ -27,6 +27,7 @@ router.get('/login', function(req, res) {
     console.dir(request.body)
     response.writeHead(200, {'Content-Type': 'text/html'})
     response.end('thanks')
+    response.send("Test!");
   })
 
 module.exports = router;
