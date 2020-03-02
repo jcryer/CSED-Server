@@ -3,6 +3,6 @@ function getData() {
 
  }
 
- setInterval(getData, 1000);
+ //setInterval(getData, 1000);
 
  module.exports.getData = getData;

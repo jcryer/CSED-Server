@@ -24,14 +24,8 @@ router.get('/login', function(req, res) {
       '&redirect_uri=' + encodeURIComponent(redirect_uri));
     });
   
-  router.post('/callback', function(req, res) {
-    console.log('POST /');
-    console.dir(req.body);
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end();
-  });
-
   router.get('/callback', function(req, res) {
+    console.log(req.query.code);
     res.redirect('landing.html');
   });
 
