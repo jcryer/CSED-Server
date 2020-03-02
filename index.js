@@ -30,7 +30,7 @@ router.get('/login', function(req, res) {
     response.send("Test!");
   });
 
-  router.get('/callback', function(req, response) {
+  router.get('/callback', function(req, res) {
     res.send("test!!!");
   });
 
