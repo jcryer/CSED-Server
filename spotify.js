@@ -30,20 +30,22 @@ function getData(authCode) {
 
     var req = http.request(options, res => {
         console.log(`statusCode: ${res.statusCode}`)
-        console.log(res.body);
+        console.dir(res.headers);
+        console.log(res.headers);
+
         res.on('data', d => {
           process.stdout.write(d);
           console.dir(d);
           console.log(d);
         });
-      });
+    });
       
-      req.on('error', error => {
-        console.error(error)
-      });
+    req.on('error', error => {
+    console.error(error)
+    });
       
-      req.write(data);
-      req.end();
+    req.write(data);
+    req.end();
     console.log("test!");
 
  }
