@@ -28,6 +28,10 @@ router.get('/login', function(req, res) {
     response.writeHead(200, {'Content-Type': 'text/html'})
     response.end('thanks')
     response.send("Test!");
-  })
+  });
+
+  router.get('/callback', function(req, response) {
+    res.send("test!!!");
+  });
 
 module.exports = router;
