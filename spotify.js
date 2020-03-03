@@ -18,7 +18,7 @@ function getData(authCode) {
 
     var options = {
         hostname: 'accounts.spotify.com',
-        port: 80,
+        port: 443,
         path: '/api/token',
         method: 'POST',
         headers: {
