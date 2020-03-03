@@ -11,7 +11,7 @@ function getData(authCode) {
     });*/
 
     var data = 'grant_type=authorization_code' +
-    '&code=' + authCode +
+    '&code=' + encodeURIComponent(authCode) +
     '&redirect_uri=' +  encodeURIComponent('https://csed-server.herokuapp.com/callback') +
     '&client_id=' + '295687b97d8f4da38afd639684a8a60e' + 
     '&client_secret=' + 'e82a2d8d37d1436fa01d9ad332a1e00b';
@@ -27,16 +27,13 @@ function getData(authCode) {
         }
     };
 
-
     var req = http.request(options, res => {
         console.log(`statusCode: ${res.statusCode}`)
         console.dir(res.headers);
         console.log(res.headers);
 
         res.on('data', d => {
-          process.stdout.write(d);
-          console.dir(d);
-          console.log(d);
+            console.log(d);
         });
     });
       
