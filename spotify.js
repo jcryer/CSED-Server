@@ -28,8 +28,8 @@ function getData(authCode) {
         }
     ).then(function(data) {
         // "Retrieved data for Faruk Sahin"
-        console.log('Retrieved data for ' + data.body['display_name']);
-        spotifyApi.getUserPlaylists(data.body['display_name'])
+        console.log('Retrieved data for ' + data.body['id']);
+        spotifyApi.getUserPlaylists(data.body['id'])
         .then(function(internalData) {
             console.log('Retrieved playlists', internalData.body);
         },function(internalErr) {
