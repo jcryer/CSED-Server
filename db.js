@@ -34,12 +34,14 @@ function getUsers() {
             resolve(userMap);
         });
     });
+
 }
 
+/*
 UserModel.find({ username: 'test', auth_key: '2r345y6trejh' }, 'username password', function (err, users) {
     if (err) return handleError(err);
     console.log(users);
-});
+});*/
 
 module.exports.getUsers = getUsers;
 
