@@ -13,6 +13,8 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/api/login", function (req, res, next) {
+
+  database.addUser(req.body.username, req.body.password);
   console.log(req);
   console.log(req.body);
   console.log(req.body.username);

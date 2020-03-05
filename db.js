@@ -15,8 +15,8 @@ var UserSchema = new Schema({
 
 var UserModel = mongoose.model('Users', UserSchema );
 
-function addUser(username, password, auth_key) {
-    UserModel.create({ 'username': username, 'password': password, 'auth_key': auth_key }, function (err, instance) {
+function addUser(username, password) {
+    UserModel.create({ 'username': username, 'password': password}, function (err, instance) {
         if (err) return handleError(err);
     });
 }
@@ -41,6 +41,7 @@ UserModel.find({ username: 'test', auth_key: '2r345y6trejh' }, 'username passwor
     if (err) return handleError(err);
     console.log(users);
 });*/
+module.exports.addUser = addUser;
 
 module.exports.getUsers = getUsers;
 
