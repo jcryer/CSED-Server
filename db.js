@@ -16,7 +16,7 @@ var UserSchema = new Schema({
 var UserModel = mongoose.model('Users', UserSchema );
 
 function addUser(username, password) {
-    UserModel.create({ 'username': username, 'password': password}, function (err, instance) {
+    UserModel.create({'username': username, 'password': password}, function (err, instance) {
         if (err) return handleError(err);
     });
 }
