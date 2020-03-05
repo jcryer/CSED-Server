@@ -13,13 +13,14 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/api/login", function (req, res, next) {
-
-  database.addUser(req.body.username, req.body.password);
-  console.log(req);
+  database.checkIfUserExists(req.body.username, req.body.password).then(
+    function(data) {
+      res.send(data);
+    }
+  )
+  //database.addUser(req.body.username, req.body.password);
   console.log(req.body);
-  console.log(req.body.username);
-  console.log(req.body.password);
-  res.send("UH OH AGAIN");
+  //res.send("UH OH AGAIN");
 });
 
 router.get("/getUsers", function (req, res, next) {

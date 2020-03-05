@@ -36,13 +36,24 @@ function getUsers() {
 
 }
 
+function checkIfUserExists(username, password) {
+    return new Promise(function(resolve, reject) {
+        UserModel.find({'username': username, 'password': password}, function(err, users) {
+            if (users.length > 0) {
+                resolve(true);
+            }
+                resolve(false);
+        });
+    });
+}
+
 /*
 UserModel.find({ username: 'test', auth_key: '2r345y6trejh' }, 'username password', function (err, users) {
     if (err) return handleError(err);
     console.log(users);
 });*/
 module.exports.addUser = addUser;
-
+module.exports.checkIfUserExists = checkIfUserExists;
 module.exports.getUsers = getUsers;
 
 /*var MongoClient = require('mongodb').MongoClient;
