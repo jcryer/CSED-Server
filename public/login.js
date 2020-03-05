@@ -11,7 +11,8 @@ $(document).ready(function() {
 			data: JSON.stringify({"username": username, "password": password}),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			success: function() {
+			success: function(data) {
+				console.log(data);
 				console.log("Works");
 			}
 		});
