@@ -4,7 +4,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var credentials = {
   redirectUri: 'https://csed-server.herokuapp.com/callback',
   clientId: '295687b97d8f4da38afd639684a8a60e',
-  clientSecret: 'e82a2d8d37d1436fa01d9ad332a1e00b',
+  clientSecret: '5866b2dc04244accbca3215a7281c4b2',
 };
 
 var spotifyApi = new SpotifyWebApi(credentials);
