@@ -21,11 +21,33 @@ function getData(authCode) {
           // Set the access token on the API object to use it in later calls
           spotifyApi.setAccessToken(data.body['access_token']);
           spotifyApi.setRefreshToken(data.body['refresh_token']);
+          return spotifyApi.getMe();
         },
         function(err) {
           console.log('Something went wrong!', err);
         }
-      );
+    ).then(function(data) {
+        // "Retrieved data for Faruk Sahin"
+        console.log('Retrieved data for ' + data.body['display_name']);
+        spotifyApi.getUserPlaylists(data.body['display_name'])
+        .then(function(internalData) {
+            console.log('Retrieved playlists', internalData.body);
+        },function(internalErr) {
+            console.log('Something went wrong!', internalErr);
+        });
+    
+        // "Email is farukemresahin@gmail.com"
+        console.log('Email is ' + data.body.email);
+    
+        // "Image URL is http://media.giphy.com/media/Aab07O5PYOmQ/giphy.gif"
+        console.log('Image URL is ' + data.body.images[0].url);
+    
+        // "This user has a premium account"
+        console.log('This user has a ' + data.body.product + ' account');
+      })
+      .catch(function(err) {
+        console.log('Something went wrong', err.message);
+      });
     /*var data = JSON.stringify({
         grant_type: 'authorization_code',
         code: authCode,
