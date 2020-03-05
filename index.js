@@ -1,7 +1,8 @@
 express = require("express");
 fs = require("fs");
 
-const test = require("./spotify");
+const database = require("./db");
+const spotify = require("./spotify");
 
 var my_client_id = "295687b97d8f4da38afd639684a8a60e";
 var redirect_uri = "https://csed-server.herokuapp.com/callback";
@@ -11,8 +12,12 @@ router.get("/", function (req, res, next) {
     res.send("UH OH");
 });
 
-router.get("/test", function (req, res, next) {
-    res.send("Big test hours");
+router.get("/getUsers", function (req, res, next) {
+    var x = database.getUsers().then(
+      function(data) {
+        console.log(data);
+        res.send(data);
+      });
 });
 
 router.get('/login', function(req, res) {
@@ -33,7 +38,7 @@ router.get('/login', function(req, res) {
   
   router.get('/callback', function(req, res) {
     console.log(req.query.code);
-    test.getData(req.query.code);
+    spotify.getData(req.query.code);
     res.redirect('landing.html');
   });
 
