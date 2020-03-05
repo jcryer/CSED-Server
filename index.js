@@ -12,6 +12,13 @@ router.get("/", function (req, res, next) {
     res.send("UH OH");
 });
 
+router.post("/api/login", function (req, res, next) {
+  console.log(req.body);
+  console.log(req.body.username);
+  console.log(req.body.password);
+  res.send("UH OH AGAIN");
+});
+
 router.get("/getUsers", function (req, res, next) {
     var x = database.getUsers().then(
       function(data) {
