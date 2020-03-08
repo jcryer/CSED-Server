@@ -1,36 +1,37 @@
 <!DOCTYPE HTML>
 <html>
 
-	<style>
-	
-		* {
-		
-			font-family: arial;
-			
-		}
-		
-		h1 {
-		
-			font-size: 40px;
-		
-		}
-		
-		form {
-		
-			font-size: 20px;
-		
-		}
-	
-	</style>
+	<link rel = "stylesheet" href = "webApp.css">
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src = "createAccount.js"></script>
 
 	<title>Create an Account</title>
-	
+
 	<body>
-	
+
 		<center>
 
 			<h1>Create an Account</h1>
-			
+
+			<form>
+
+				<label>Enter username:</label><br>
+				<input type = "text" id = "username"><br><br>
+				<label>Enter forename:</label><br>
+				<input type = "text" id = "forename"><br><br>
+				<label>Enter surname</label><br>
+				<input type = "text" id = "surname"><br><br>
+				<label>Enter password:</label><br>
+				<input type = "text" id = "password"><br><br>
+				<label>Confirm password:</label><br>
+				<input type = "text" id = "confirmedPassword"><br><br>
+
+			</form>
+
+			<a href = "index.html">Go Back</a>&emsp;
+			<button id = "newAccount">Create Account</button>
+			<div id = "incorrectPassword" style = "color: red;"></div>
+
 		</center>
 
 	</body>
