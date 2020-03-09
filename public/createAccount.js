@@ -8,23 +8,23 @@ $(document).ready(function() {
 		
 		if (username.localeCompare("") == 0) {
 
-			document.getElementById('errorMessage').innerHTML = "<br>One or more fields are blank!";
+			document.getElementById('errorMessage').innerHTML = "One or more fields are blank!";
 
 		} else if (firstName.localeCompare("") == 0) {
 
-			document.getElementById('errorMessage').innerHTML = "<br>One or more fields are blank!";
+			document.getElementById('errorMessage').innerHTML = "One or more fields are blank!";
 
 		} else if (lastName.localeCompare("") == 0) {
 
-			document.getElementById('errorMessage').innerHTML = "<br>One or more fields are blank!";
+			document.getElementById('errorMessage').innerHTML = "One or more fields are blank!";
 
 		} else if (password.localeCompare("") == 0) {
 
-			document.getElementById('errorMessage').innerHTML = "<br>One or more fields are blank!";
+			document.getElementById('errorMessage').innerHTML = "One or more fields are blank!";
 
 		} else if (confirmedPassword.localeCompare("") == 0) {
 
-			document.getElementById('errorMessage').innerHTML = "<br>One or more fields are blank!";
+			document.getElementById('errorMessage').innerHTML = "One or more fields are blank!";
 
 		} else {
 			
@@ -50,7 +50,7 @@ $(document).ready(function() {
 					break;
 			
 				default:
-					document.getElementById('errorMessage').innerHTML = "<br>Passwords do not match!";
+					document.getElementById('errorMessage').innerHTML = "Passwords do not match!";
 		}
 
 		}
