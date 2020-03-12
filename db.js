@@ -105,7 +105,7 @@ function checkLoginDetails(username, password) {
             if (users.length > 0) {
                 resolve({ 'valid': true, 'id': users[0].id });
             }
-            resolve({'valid': true });
+            resolve({'valid': false });
         });
     });
 }
