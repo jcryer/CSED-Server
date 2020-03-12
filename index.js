@@ -124,13 +124,23 @@ router.get('/connect', verifyToken, function(req, res) {
   
   router.get('/callback', function(req, res) {
     console.log(req.query.state);
+    spotify.getData2(req.query.code);
 
     database.updateUserAuthKey(req.query.state, req.query.code).then(
       function(data) {
-        spotify.getData(req.query.code);
+        res.redirect('landing.html');
       }
     )
     res.redirect('landing.html');
+  });
+
+  router.get('/info', verifyToken, function(req, res) {
+    database.getAuthToken(req.user.username).then(
+      function(data) {
+        console.log("Auth token: " + data);
+        spotify.getData2(data);
+      }
+    )
   });
 
 module.exports = router;

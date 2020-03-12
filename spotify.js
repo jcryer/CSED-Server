@@ -44,6 +44,34 @@ function getData(authCode) {
       });
  }
 
+
+
+function getData2(authCode) {
+
+  spotifyApi.authorizationCodeGrant(authCode).then(
+      function(data) {
+        console.log("Auth token: " + data.body['access_token']);
+
+        console.log('The token expires in ' + data.body['expires_in']);
+        console.log('The access token is ' + data.body['access_token']);
+        console.log('The refresh token is ' + data.body['refresh_token']);
+    
+        spotifyApi.setAccessToken(data.body['access_token']);
+        spotifyApi.setRefreshToken(data.body['refresh_token']);
+        return spotifyApi.getMyRecentlyPlayedTracks();
+      },
+      function(err) {
+        console.log('Something went wrong!', err);
+      }
+  ).then(function(data) {
+    console.log('Retrieved recently played songs: ', data.body);
+    })
+    .catch(function(err) {
+      console.log('Something went wrong', err.message);
+    });
+}
+
  //setInterval(getData, 1000);
 
  module.exports.getData = getData;
+ module.exports.getData2 = getData2;

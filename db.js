@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const argon2 = require('argon2');
 
 mongoose.connect('mongodb+srv://test:test@cluster0-bujef.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true});
 
@@ -18,7 +19,6 @@ var UserSchema = new Schema({
 var Users = mongoose.model('Users', UserSchema );
 
 function generateToken(res, id, firstname) {
-    //Users.collection.drop();
     return new Promise(function(resolve, reject) {
         var expiration = process.env.DB_ENV === 'testing' ? 100 : 604800000;
         var token = jwt.sign({ id, firstname }, process.env.JWT_SECRET, {
@@ -35,13 +35,14 @@ function generateToken(res, id, firstname) {
 }
 
 function addUser(username, password) {
-    Users.create({'username': username, 'password': password, 'auth_key': makeid(48)}, function (err, instance) {
-        if (err) return handleError(err);
+    argon2.hash(password).then((hash) => {
+        Users.create({'username': username, 'password': hash, 'auth_key': makeid(48)}, function (err, instance) {
+            if (err) return handleError(err);
+        });
     });
 }
 
 function getUsers() {
-    //Users.collection.drop();
     return new Promise(function(resolve, reject) {
         Users.find({}, function(err, users) {
             var userMap = {};
@@ -64,16 +65,6 @@ function makeid(length) {
     }
     return result;
  }
-
-  
-function addAuthToken(username, auth_key) {
-    Users.findOne({'username': username }, function(err, userData){            
-        if(userData){
-            userData.auth_key = auth_key;
-            userData.save();
-        }
-    });
-}
 
 function getAuthToken(username) {
     return new Promise(function(resolve, reject) {
@@ -98,11 +89,21 @@ function updateUserAuthKey(tempKey, newKey) {
 
 function checkLoginDetails(username, password) {
     return new Promise(function(resolve, reject) {
-        Users.find({'username': username, 'password': password}, function(err, users) {
+
+        Users.find({'username': username}, function(err, users) {
             if (users.length > 0) {
-                resolve({ 'valid': true, 'id': users[0].id });
+                argon2.verify(users[0].password, password).then(function(isValid) 
+                {
+                    if (isValid == true) {
+                        resolve({ 'valid': true, 'id': users[0].id });
+                    }
+                    else {
+                        resolve({'valid': false });
+                    }
+                }).catch(() => {
+                    resolve({'valid': false });
+                });
             }
-            resolve({'valid': false });
         });
     });
 }

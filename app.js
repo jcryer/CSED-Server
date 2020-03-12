@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const argon2 = require('argon2');
 const cookieParser = require('cookie-parser');
 const app = express();
 const bodyparse = require('body-parser');
