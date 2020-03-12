@@ -90,6 +90,8 @@ function updateUserAuthKey(tempKey, newKey) {
         Users.findOne({'auth_key': tempKey }, function(err, userData){            
             if(userData){
                 userData.auth_key = newKey;
+                console.log("New key: " + newKey);
+                console.log(userData.auth_key);
                 resolve(true);
             }
             else {

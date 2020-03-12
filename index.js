@@ -125,7 +125,7 @@ router.get('/connect', verifyToken, function(req, res) {
   router.get('/callback', function(req, res) {
     console.log(req.query.code);
 
-    database.updateUserAuthKey(req.query.scope, req.query.code);
+    database.updateUserAuthKey(req.query.state, req.query.code);
     spotify.getData(req.query.code);
     res.redirect('landing.html');
   });
