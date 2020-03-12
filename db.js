@@ -87,16 +87,11 @@ function getAuthToken(username) {
 
 function updateUserAuthKey(tempKey, newKey) {
     return new Promise(function(resolve, reject) {
-        Users.findOne({'auth_key': tempKey }, function(err, userData){            
-            if(userData){
-                userData.auth_key = newKey;
-                console.log("New key: " + newKey);
-                console.log(userData.auth_key);
-                resolve(true);
-            }
-            else {
+        Users.findOneAndUpdate({'auth_key': tempKey }, { 'auth_key': newKey }, (err) => {
+            if (err) {
                 resolve(false);
             }
+            resolve(true);
         });
     });
 }
