@@ -1,7 +1,11 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const app = express();
 const bodyparse = require('body-parser');
 app.use(bodyparse.json());
+app.use(cookieParser());
 
 const index = require('./index');
 

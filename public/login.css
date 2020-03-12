@@ -1,0 +1,83 @@
+@keyframes loginAppear{
+    0%{padding: 0px; height: 0px; min-width: 0; width: 0%}
+    50%{padding: 0px; height: 0px; min-width: 400px; width: 40%}
+    100%{padding: 20px; height: 400px; min-width: 400px; width: 40%}
+}
+
+@keyframes loginDisappear{
+    0%{padding: 20px; height: 400px; min-width: 400px; width: 40%; visibility: visible}
+    50%{padding: 0px; height: 0px; min-width: 400px; width: 40%}
+    100%{padding: 0px; height: 0px; min-width: 0px; width: 0%; visibility: visible}
+}
+
+body{
+    font-family: "Titillium Web", sans-serif;
+}
+
+.loginSection {
+    border: 3px solid #4b536b;
+    height: 400px;
+    white-space: nowrap;
+    width: 40%;
+    min-width: 400px;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    overflow: hidden;
+    animation-name: loginAppear;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #000000;
+
+}
+
+.loginSectionHidden{
+    visibility: hidden;
+    border: 3px solid #4b536b;
+    height: 400px;
+    white-space: nowrap;
+    width: 40%;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    overflow: hidden;
+    animation-name: loginDisappear;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #000000;
+}
+
+input[type=text], input[type=password], button, select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+    color: #000000;
+}
+
+button {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #000000;
+  background-color: #ffffff;
+}

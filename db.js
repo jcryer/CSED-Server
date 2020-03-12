@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+
 mongoose.connect('mongodb+srv://test:test@cluster0-bujef.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true});
 
 var db = mongoose.connection;
@@ -10,20 +12,38 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
   username: String,
   password: String,
-  auth_key: String
+  auth_key: String,
 });
 
-var UserModel = mongoose.model('Users', UserSchema );
+var Users = mongoose.model('Users', UserSchema );
+
+function generateToken(res, id, firstname) {
+    //Users.collection.drop();
+    return new Promise(function(resolve, reject) {
+        var expiration = process.env.DB_ENV === 'testing' ? 100 : 604800000;
+        var token = jwt.sign({ id, firstname }, process.env.JWT_SECRET, {
+            expiresIn: process.env.DB_ENV === 'testing' ? '1d' : '7d',
+        });
+        console.log(token);
+        resolve(token);
+        resolve(res.cookie('token', token, {
+            expires: new Date(Date.now() + expiration),
+            secure: false,
+            httpOnly: true,
+        }));
+    });
+}
 
 function addUser(username, password) {
-    UserModel.create({'username': username, 'password': password}, function (err, instance) {
+    Users.create({'username': username, 'password': password, 'auth_key': makeid(48)}, function (err, instance) {
         if (err) return handleError(err);
     });
 }
 
 function getUsers() {
+    //Users.collection.drop();
     return new Promise(function(resolve, reject) {
-        UserModel.find({}, function(err, users) {
+        Users.find({}, function(err, users) {
             var userMap = {};
         
             users.forEach(function(user) {
@@ -33,12 +53,66 @@ function getUsers() {
             resolve(userMap);
         });
     });
-
 }
 
-function checkIfUserExists(username, password) {
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
+  
+function addAuthToken(username, auth_key) {
+    Users.findOne({'username': username }, function(err, userData){            
+        if(userData){
+            userData.auth_key = auth_key;
+            userData.save();
+        }
+    });
+}
+
+function getAuthToken(username) {
     return new Promise(function(resolve, reject) {
-        UserModel.find({'username': username, 'password': password}, function(err, users) {
+        Users.findOne({'username': username }, function(err, userData){            
+            if(userData){
+                resolve(userData.auth_key);
+            }
+        });
+    });
+}
+
+function updateUserAuthKey(tempKey, newKey) {
+    return new Promise(function(resolve, reject) {
+        Users.findOne({'auth_key': tempKey }, function(err, userData){            
+            if(userData){
+                userData.auth_key = newKey;
+                resolve(true);
+            }
+            else {
+                resolve(false);
+            }
+        });
+    });
+}
+
+function checkLoginDetails(username, password) {
+    return new Promise(function(resolve, reject) {
+        Users.find({'username': username, 'password': password}, function(err, users) {
+            if (users.length > 0) {
+                resolve({ 'valid': true, 'id': users[0].id });
+            }
+            resolve({'valid': true });
+        });
+    });
+}
+
+function checkIfUserExists(username) {
+    return new Promise(function(resolve, reject) {
+        Users.find({'username': username}, function(err, users) {
             if (users.length > 0) {
                 resolve(true);
             }
@@ -48,13 +122,18 @@ function checkIfUserExists(username, password) {
 }
 
 /*
-UserModel.find({ username: 'test', auth_key: '2r345y6trejh' }, 'username password', function (err, users) {
+Users.find({ username: 'test', auth_key: '2r345y6trejh' }, 'username password', function (err, users) {
     if (err) return handleError(err);
     console.log(users);
 });*/
+module.exports.generateToken = generateToken;
+
 module.exports.addUser = addUser;
 module.exports.checkIfUserExists = checkIfUserExists;
 module.exports.getUsers = getUsers;
+module.exports.checkLoginDetails = checkLoginDetails;
+module.exports.updateUserAuthKey = updateUserAuthKey;
+module.exports.getAuthToken = getAuthToken;
 
 /*var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017";
