@@ -20,12 +20,19 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res.status(401).json('You need to Login')
     }
-    const decrypt = await jwt.verify(token, process.env.JWT_SECRET);
-    req.user = {
-      id: decrypt.id,
-      username: decrypt.username,
-    };
-    next();
+
+    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
+      if (err) {
+      }
+      else {
+        req.user = {
+          id: decoded.id,
+          username: decoded.username,
+        };
+        next();
+      }
+    });
+    
   } catch (err) {
     return res.status(500).json(err.toString());
   }
@@ -95,6 +102,8 @@ router.get('/connect', verifyToken, function(req, res) {
 
   database.getAuthToken(req.user.username).then(
     function (data) {
+      console.log(req.user.username);
+
       res.send('<a href="https://accounts.spotify.com/authorize' 
       + '?response_type=code' 
       + '&client_id=' + my_client_id 

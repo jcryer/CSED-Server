@@ -43,7 +43,7 @@ $(document).ready(function() {
 							console.log(data);
                             console.log("Works");
                             if (data == true) {
-                                window.location.replace("connect");
+                                window.location.replace("/");
                             }
                             else {
                                 document.getElementById('errorMessage').innerHTML = "Passwords do not match!";
