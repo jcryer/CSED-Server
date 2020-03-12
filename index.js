@@ -123,10 +123,13 @@ router.get('/connect', verifyToken, function(req, res) {
     });
   
   router.get('/callback', function(req, res) {
-    console.log(req.query.code);
+    console.log(req.query.state);
 
-    database.updateUserAuthKey(req.query.state, req.query.code);
-    spotify.getData(req.query.code);
+    database.updateUserAuthKey(req.query.state, req.query.code).then(
+      function(data) {
+        spotify.getData(req.query.code);
+      }
+    )
     res.redirect('landing.html');
   });
 
