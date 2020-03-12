@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<style>
-			* {
-				font-family: arial;
-			}
-			h1 {
-				font-size: 40px;
-			}
-			form {
-				font-size: 20px;
-			}
-		</style>
-		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<script src = "login.js"></script>
-		<title>Login Page</title>
-	</head>
+	
+	<link rel = "stylesheet" href = "webApp.css">
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<title> Login Page </title>
+
 	<body>
 		<center>
 			<h1> Login Page </h1><br><br>
@@ -25,8 +15,11 @@
 				<label for = "username">Enter username:</label><br>
 				<input type = "text" id = "username" name = "username"><br><br>
 				<label for = "password">Enter password:</label><br>
-				<input type = "text" id = "password" name = "password"><br><br>
+				<input type = "password" id = "password" name = "password"><br><br>
+				
 			</form>
+			
+			<a href = "createAccount.html">Create an Account</a>&emsp;
 			<button id="submit">Submit</button>
 		</center>
 	</body>
