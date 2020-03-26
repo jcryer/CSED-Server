@@ -44,10 +44,10 @@ function generateToken(res, id, firstname) {
 
 function addListenInfo(data, userid) {
     data.forEach(function(item) {
-
         Listens.count({'songid': item.track.id, 'played': item.played_at}, function (err, count){ 
             if(count == 0) {
                 Listens.create({'userid': userid, 'songid': item.track.id, 'played': item.played_at}, function (err, instance) {
+                    console.log("song added!");
                     if (err) return handleError(err);
                 });
             }
@@ -66,10 +66,10 @@ function addUser(username, password) {
 function getUsers() {
     return new Promise(function(resolve, reject) {
         Users.find({}, function(err, users) {
-            var userMap = {};
+            var userMap = [];
         
             users.forEach(function(user) {
-                userMap[user._id] = user;
+                userMap.push(user);
             });
 
             resolve(userMap);

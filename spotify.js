@@ -46,8 +46,6 @@ function getData(username, userid) {
     function () {
       spotifyApi.getMyRecentlyPlayedTracks({ limit: 50 }).then(
         function (data) {
-          console.log('3::::: Retrieved recently played songs: ', JSON.stringify(data.body));
-
           database.addListenInfo(data.body.items, userid);
         }
       );
@@ -55,7 +53,20 @@ function getData(username, userid) {
   );
 }
 
- //setInterval(getData, 1000);
+function dataListener() {
+  var filteredUsers = database.getUsers.filter(
+    function (data) {
+      return data.refresh_token != null;
+    }
+  );
+  filteredUsers.forEach(
+    function(user) {
+      getData(user.username, user._id);
+    }
+  );
+}
+
+setInterval(dataListener, 30000);
 
  module.exports.getData = getData;
  module.exports.finaliseAuth = finaliseAuth;
