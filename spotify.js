@@ -54,15 +54,18 @@ function getData(username, userid) {
 }
 
 function dataListener() {
-  var users = database.getUsers();
-  var filteredUsers = users.filter(
-    function (data) {
-      return data.refresh_token != null;
-    }
-  );
-  filteredUsers.forEach(
-    function(user) {
-      getData(user.username, user._id);
+  database.getUsers().then(
+    function (users) {
+      var filteredUsers = users.filter(
+        function (data) {
+          return data.refresh_token != null;
+        }
+      );
+      filteredUsers.forEach(
+        function(user) {
+          getData(user.username, user._id);
+        }
+      );
     }
   );
 }
