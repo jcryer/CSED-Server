@@ -91,13 +91,6 @@ router.get("/getUsers", verifyToken, function (req, res, next) {
 });
 
 router.get('/connect', verifyToken, function(req, res) {
-  //res.send("test");
-  /*
-  res.send('<a href="https://accounts.spotify.com/authorize'
-  + '?response_type=code' 
-    + '&client_id=' + my_client_id 
-  + '">aaa</a>');
-  */
  var scopes = 'user-read-playback-state streaming playlist-read-collaborative user-modify-playback-state playlist-modify-public user-top-read user-read-currently-playing playlist-read-private user-follow-read user-read-recently-played playlist-modify-private ';
 
   database.getAuthToken(req.user.username).then(
@@ -113,30 +106,23 @@ router.get('/connect', verifyToken, function(req, res) {
       + '">Login to Spotify here</a>');
     }
   );
-    
-    /*
-    res.send('https://accounts.spotify.com/authorize' +
-      '?response_type=code' +
-      '&client_id=' + my_client_id +
-      (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-      '&redirect_uri=' + encodeURIComponent(redirect_uri));*/
-    });
+});
   
   router.get('/callback', function(req, res) {
-    console.log(req.query.state);
-    spotify.getData2(req.query.code);
-
-    database.updateUserAuthKey(req.query.state, req.query.code).then(
+    spotify.finaliseAuth(req.query.code).then(
       function(data) {
-        res.redirect('landing.html');
+        database.updateAuthInfo(req.query.state, req.query.code, data).then(
+          function(data) {
+            res.redirect('landing.html');
+          }
+        )
       }
-    )
-    res.redirect('landing.html');
+    );
   });
 
 
   router.get('/info', verifyToken, function(req, res) {
-      spotify.getData3();
+      spotify.getData(req.user.username);
   });
 
 module.exports = router;

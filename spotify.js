@@ -1,5 +1,6 @@
 const http = require('http');
 var SpotifyWebApi = require('spotify-web-api-node');
+const database = require("./db");
 
 var credentials = {
   redirectUri: 'https://csed-server.herokuapp.com/callback',
@@ -9,69 +10,59 @@ var credentials = {
 
 var spotifyApi = new SpotifyWebApi(credentials);
 
-function getData(authCode) {
+function finaliseAuth(authCode) {
+    return new Promise(function(resolve, reject) {
 
-    spotifyApi.authorizationCodeGrant(authCode).then(
+      spotifyApi.authorizationCodeGrant(authCode).then(
         function(data) {
+          console.log("Auth token: " + data.body['access_token']);
+  
           console.log('The token expires in ' + data.body['expires_in']);
           console.log('The access token is ' + data.body['access_token']);
           console.log('The refresh token is ' + data.body['refresh_token']);
-      
-          spotifyApi.setAccessToken(data.body['access_token']);
-          spotifyApi.setRefreshToken(data.body['refresh_token']);
-          return spotifyApi.getMe();
-        },
-        function(err) {
-          console.log('Something went wrong!', err);
-        }
-    ).then(function(data) {
-        console.log('Retrieved data for ' + data.body['id']);
-        spotifyApi.getUserPlaylists(data.body['id'])
-        .then(function(internalData) {
-            console.log('Retrieved playlists', internalData.body);
-        },function(internalErr) {
-            console.log('Something went wrong!', internalErr);
+
+          resolve(data.body['refresh_token']);
         });
-    
-        console.log('Email is ' + data.body.email);
-    
-        console.log('Image URL is ' + data.body.images[0].url);
-    
-        console.log('This user has a ' + data.body.product + ' account');
-      })
-      .catch(function(err) {
-        console.log('Something went wrong', err.message);
-      });
- }
-
-
-
-function getData2(authCode) {
-
-  spotifyApi.authorizationCodeGrant(authCode).then(
-      function(data) {
-        console.log("Auth token: " + data.body['access_token']);
-
-        console.log('The token expires in ' + data.body['expires_in']);
-        console.log('The access token is ' + data.body['access_token']);
-        console.log('The refresh token is ' + data.body['refresh_token']);
-    
-        spotifyApi.setAccessToken(data.body['access_token']);
-        spotifyApi.setRefreshToken(data.body['refresh_token']);
-        return spotifyApi.getMyRecentlyPlayedTracks();
-      },
-      function(err) {
-        console.log('Something went wrong!', err);
-      }
-  ).then(function(data) {
-    console.log('2::::: Retrieved recently played songs: ', data.body);
-    })
-    .catch(function(err) {
-      console.log('Something went wrong', err.message);
-    });
+  });
 }
 
-function getData3() {
+function getAccessToken(username) {
+  return new Promise(function(resolve, reject) {
+    database.getRefreshToken(username).then(
+      function (token) {
+        spotifyApi.setRefreshToken(data.body['refresh_token']);
+        spotifyApi.refreshAccessToken().then(
+          function(data) {
+            spotifyApi.setAccessToken(data.body['access_token']);
+            resolve(data.body['access_token']);
+          });
+        });
+      }
+    );
+}
+
+function getData(username) {
+  getAccessToken().then(
+    function (data) {
+      spotifyApi.getMyRecentlyPlayedTracks().then(
+        function (data) {
+          console.log('3::::: Retrieved recently played songs: ', data.body);
+        }
+      );
+    }
+  );
+
+}
+
+ //setInterval(getData, 1000);
+
+ module.exports.getData = getData;
+ module.exports.finaliseAuth = finaliseAuth;
+
+
+
+
+ /*
 
   spotifyApi.refreshAccessToken().then(
       function(data) {
@@ -94,10 +85,4 @@ function getData3() {
     .catch(function(err) {
       console.log('Something went wrong', err.message);
     });
-}
-
- //setInterval(getData, 1000);
-
- module.exports.getData = getData;
- module.exports.getData2 = getData2;
- module.exports.getData3 = getData3;
+    */
