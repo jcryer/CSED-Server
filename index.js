@@ -69,8 +69,23 @@ router.post("/api/register", function (req, res, next) {
     function(data) {
       if (!data) {
         
-        database.addUser(req.body.username, req.body.password);
-        res.send("true");
+        database.addUser(req.body.username, req.body.password).then(
+          function(userID) {
+            var id = userID;
+            var username = req.body.username;
+            var expiration = process.env.DB_ENV === 'testing' ? 30000 : 86400000;
+            var token = jwt.sign({ 'id': id, 'username': username }, process.env.JWT_SECRET, {
+              expiresIn: process.env.DB_ENV === 'testing' ? '30s' : '1d',
+            });
+            
+            res.cookie('token', token, {
+              expires: new Date(Date.now() + expiration),
+              secure: false,
+              httpOnly: true
+            });
+            res.send("true");
+          }
+        )
       }
       else {
         res.send("false");

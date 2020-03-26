@@ -56,9 +56,12 @@ function addListenInfo(data, userid) {
 }
 
 function addUser(username, password) {
-    argon2.hash(password).then((hash) => {
-        Users.create({'username': username, 'password': hash, 'auth_key': makeid(48)}, function (err, instance) {
-            if (err) return handleError(err);
+    return new Promise(function(resolve, reject) {
+        argon2.hash(password).then((hash) => {
+            Users.create({'username': username, 'password': hash, 'auth_key': makeid(48)}, function (err, instance) {
+                if (err) return handleError(err);
+                resolve(instance._id);
+            });
         });
     });
 }
