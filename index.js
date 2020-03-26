@@ -122,7 +122,7 @@ router.get('/connect', verifyToken, function(req, res) {
 
 
   router.get('/info', verifyToken, function(req, res) {
-      spotify.getData(req.user.username);
+      spotify.getData(req.user.username, req.user.id);
       res.send("aaa");
   });
 

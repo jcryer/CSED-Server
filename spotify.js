@@ -41,17 +41,18 @@ function getAccessToken(username) {
     );
 } 
 
-function getData(username) {
+function getData(username, userid) {
   getAccessToken(username).then(
     function () {
-      spotifyApi.getMyRecentlyPlayedTracks().then(
+      spotifyApi.getMyRecentlyPlayedTracks({ limit: 50 }).then(
         function (data) {
           console.log('3::::: Retrieved recently played songs: ', JSON.stringify(data.body));
+
+          database.addListenInfo(data.body.items, userid);
         }
       );
     }
   );
-
 }
 
  //setInterval(getData, 1000);

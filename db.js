@@ -17,7 +17,14 @@ var UserSchema = new Schema({
   refresh_token: String,
 });
 
+var ListenSchema = new Schema({
+    userid: String,
+    songid: String,
+    played: String,
+  });
+
 var Users = mongoose.model('Users', UserSchema );
+var Listens = mongoose.model('Listens', ListenSchema );
 
 function generateToken(res, id, firstname) {
     return new Promise(function(resolve, reject) {
@@ -32,6 +39,23 @@ function generateToken(res, id, firstname) {
             secure: false,
             httpOnly: true,
         }));
+    });
+}
+
+function addListenInfo(data, userid) {
+    var arr = [];
+
+    data.forEach(function(item) {
+        arr.push({'userid': userid, 'songid': item.track.id, 'played': item.played_at});
+    });
+    console.log(arr);
+
+    Listens.collection.insert(arr, function (err) {
+        if (err){ 
+            return console.error(err);
+        } else {
+          console.log("Multiple documents inserted to Collection");
+        }
     });
 }
 
@@ -134,6 +158,8 @@ function checkIfUserExists(username) {
 module.exports.generateToken = generateToken;
 
 module.exports.addUser = addUser;
+module.exports.addListenInfo = addListenInfo;
+
 module.exports.checkIfUserExists = checkIfUserExists;
 module.exports.getUsers = getUsers;
 module.exports.getRefreshToken = getRefreshToken;
