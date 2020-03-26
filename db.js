@@ -43,24 +43,15 @@ function generateToken(res, id, firstname) {
 }
 
 function addListenInfo(data, userid) {
-    var arr = [];
-
     data.forEach(function(item) {
+
         Listens.count({'songid': item.track.id, 'played': item.played_at}, function (err, count){ 
             if(count == 0) {
-                arr.push({'userid': userid, 'songid': item.track.id, 'played': item.played_at});
-                console.log(arr);
+                Listens.create({'userid': userid, 'songid': item.track.id, 'played': item.played_at}, function (err, instance) {
+                    if (err) return handleError(err);
+                });
             }
         }); 
-    });
-    console.log(arr);
-
-    Listens.collection.insert(arr, function (err) {
-        if (err){ 
-            return console.error(err);
-        } else {
-          console.log("Multiple documents inserted to Collection");
-        }
     });
 }
 
