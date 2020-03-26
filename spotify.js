@@ -54,7 +54,7 @@ function getData(username, userid) {
 }
 
 function dataListener() {
-  var filteredUsers = database.getUsers.filter(
+  var filteredUsers = database.getUsers().filter(
     function (data) {
       return data.refresh_token != null;
     }
