@@ -30,7 +30,7 @@ function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
     database.getRefreshToken(username).then(
       function (token) {
-        spotifyApi.setRefreshToken(data.body['refresh_token']);
+        spotifyApi.setRefreshToken(token);
         spotifyApi.refreshAccessToken().then(
           function(data) {
             spotifyApi.setAccessToken(data.body['access_token']);
