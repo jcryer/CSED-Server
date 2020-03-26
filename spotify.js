@@ -46,7 +46,7 @@ function getData(username) {
     function () {
       spotifyApi.getMyRecentlyPlayedTracks().then(
         function (data) {
-          console.log('3::::: Retrieved recently played songs: ', data.body);
+          console.log('3::::: Retrieved recently played songs: ', JSON.stringify(data.body));
         }
       );
     }
