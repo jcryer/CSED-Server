@@ -49,6 +49,7 @@ function addListenInfo(data, userid) {
         Listens.count({'songid': item.track.id, 'played': item.played_at}, function (err, count){ 
             if(count == 0) {
                 arr.push({'userid': userid, 'songid': item.track.id, 'played': item.played_at});
+                console.log(arr);
             }
         }); 
     });
