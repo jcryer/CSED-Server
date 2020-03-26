@@ -39,11 +39,11 @@ function getAccessToken(username) {
         });
       }
     );
-}
+} 
 
 function getData(username) {
-  getAccessToken().then(
-    function (data) {
+  getAccessToken(username).then(
+    function () {
       spotifyApi.getMyRecentlyPlayedTracks().then(
         function (data) {
           console.log('3::::: Retrieved recently played songs: ', data.body);

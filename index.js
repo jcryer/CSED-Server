@@ -123,6 +123,7 @@ router.get('/connect', verifyToken, function(req, res) {
 
   router.get('/info', verifyToken, function(req, res) {
       spotify.getData(req.user.username);
+      res.send("aaa");
   });
 
 module.exports = router;
