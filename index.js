@@ -134,13 +134,9 @@ router.get('/connect', verifyToken, function(req, res) {
     res.redirect('landing.html');
   });
 
+
   router.get('/info', verifyToken, function(req, res) {
-    database.getAuthToken(req.user.username).then(
-      function(data) {
-        console.log("Auth token: " + data);
-        spotify.getData2(data);
-      }
-    )
+      spotify.getData3();
   });
 
 module.exports = router;
