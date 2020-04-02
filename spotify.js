@@ -34,11 +34,22 @@ function getTracksInfo(userid) {
         console.log("GOT LISTEN INFO");
 
         trackIDs = [];
+        tracks = [];
+        iter = 0
         listens.forEach(function(listen) {
           trackIDs.push(listen.songid);
+          iter ++;
+          if (iter % 48 == 0) {
+            spotifyApi.getTracks(trackIDs).then(
+              function (trackObjs) {
+                Array.prototype.push.apply(tracks, trackObjs);
+                console.log(trackIDs);
+                trackIDs = [];
+              }
+            );
+          }
+          return tracks;
         });
-        console.log(trackIDs);
-        return spotifyApi.getTracks(trackIDs);
       }
     ).then(function(obj) {
       console.log("GOT TRACKS");
