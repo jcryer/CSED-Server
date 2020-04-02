@@ -55,6 +55,20 @@ function addListenInfo(data, userid) {
     });
 }
 
+
+function getListenInfo(userid) {
+    return new Promise(function(resolve, reject) {
+        Listens.find({'userid': userid}, function(err, listens) {
+            var listenMap = [];
+            listens.forEach(function(listen) {
+                listenMap.push(listen);
+            });
+            resolve(listenMap);
+        });
+    });
+}
+
+
 function addUser(username, password) {
     return new Promise(function(resolve, reject) {
         argon2.hash(password).then((hash) => {
@@ -156,6 +170,7 @@ function checkIfUserExists(username) {
 
 module.exports.generateToken = generateToken;
 
+module.exports.getListenInfo = getListenInfo;
 module.exports.addUser = addUser;
 module.exports.addListenInfo = addListenInfo;
 

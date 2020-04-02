@@ -26,6 +26,25 @@ function finaliseAuth(authCode) {
   });
 }
 
+function getTracksInfo(userid) {
+  return new Promise(function(resolve, reject) {
+    database.getListenInfo(userid).then(
+      function (listens) {
+        trackIDs = [];
+        listens.forEach(function(listen) {
+          trackIDs.push(listen.songid);
+        });
+        return spotifyApi.getTracks(trackIDs);
+      }
+    ).then(function(obj) {
+      tracks = [];
+      obj.tracks.forEach(function(track) {
+        tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
+      });
+      resolve(tracks);
+    })
+  });
+}
 function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
     database.getRefreshToken(username).then(
@@ -72,6 +91,8 @@ function dataListener() {
 
 setInterval(dataListener, 30000);
 
+
+module.exports.getTracksInfo = getTracksInfo;
  module.exports.getData = getData;
  module.exports.finaliseAuth = finaliseAuth;
 
