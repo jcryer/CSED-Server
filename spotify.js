@@ -29,14 +29,19 @@ function finaliseAuth(authCode) {
 function getTracksInfo(userid) {
   return new Promise(function(resolve, reject) {
     database.getListenInfo(userid).then(
+
       function (listens) {
+        console.log("GOT LISTEN INFO");
+
         trackIDs = [];
         listens.forEach(function(listen) {
           trackIDs.push(listen.songid);
         });
+        console.log(trackIDs);
         return spotifyApi.getTracks(trackIDs);
       }
     ).then(function(obj) {
+      console.log("GOT TRACKS");
       tracks = [];
       obj.tracks.forEach(function(track) {
         tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });

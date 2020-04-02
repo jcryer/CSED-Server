@@ -59,10 +59,13 @@ function addListenInfo(data, userid) {
 function getListenInfo(userid) {
     return new Promise(function(resolve, reject) {
         Listens.find({'userid': userid}, function(err, listens) {
+            console.log("Getting LISTEN INFO");
+
             var listenMap = [];
             listens.forEach(function(listen) {
                 listenMap.push(listen);
             });
+            console.log("GOT LISTEN INFO");
             resolve(listenMap);
         });
     });
