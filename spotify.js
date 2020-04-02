@@ -54,7 +54,7 @@ function getTracksInfo(userid) {
     ).then(function(obj) {
       console.log("GOT TRACKS");
       tracks = [];
-      obj.tracks.forEach(function(track) {
+      obj.forEach(function(track) {
         tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
       });
       resolve(tracks);
