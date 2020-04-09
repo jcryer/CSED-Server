@@ -26,36 +26,26 @@ function finaliseAuth(authCode) {
   });
 }
 
-const test = async function() {
-  return new Promise(function(resolve, reject) {
-    spotifyApi.getTracks(trackIDs).then(
-      function (data) {
-        resolve(data);
-      }
-    );
-  });
-}
-
 const getTracksInfo = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
 
   trackIDs = [];
   tracks = [];
-  iter = 0;
   for (let i = 0; i < listens.count; i++) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0) {
-      var tList = await test(trackIDs);
+      var tList = await spotifyApi.getTracks(trackIDs);
       tList.body.tracks.forEach(function(t) {
         tracks.push(t);
       });
+      console.log(tracks.count);
       trackIDs = [];
     }
   }
 
   if (trackIDs.length > 0) {
-    var tList = await test(trackIDs);
+    var tList = await spotifyApi.getTracks(trackIDs);
     tList.body.tracks.forEach(function(t) {
       tracks.push(t);
     });
