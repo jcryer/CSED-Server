@@ -31,6 +31,33 @@ const getTracksInfo = async function(username, userid) {
   var listens = await database.getListenInfo(userid);
 
   trackIDs = [];
+  tracks = {};
+  for (var i = 0; i < listens.length; i++) {
+    trackIDs.push(listens[i].songid);
+    if (i % 48 == 0) {
+      var tList = await spotifyApi.getTracks(trackIDs);
+      tList.body.tracks.forEach(function(t) {
+        tracks[trackIDs[i]] = {'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri };
+      });
+      trackIDs = [];
+    }
+  }
+
+  if (trackIDs.length > 0) {
+    var tList = await spotifyApi.getTracks(trackIDs);
+    tList.body.tracks.forEach(function(t) {
+      tracks[trackIDs[i]] = {'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri };
+    });
+  }
+  return tracks;
+}
+
+/*
+const getTracksInfo = async function(username, userid) {
+  await getAccessToken(username);
+  var listens = await database.getListenInfo(userid);
+
+  trackIDs = [];
   tracks = [];
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
@@ -57,6 +84,7 @@ const getTracksInfo = async function(username, userid) {
   });
   return output;
 }
+*/
 
 /*
 function getTracksInfo(username, userid) {
