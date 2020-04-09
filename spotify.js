@@ -38,7 +38,7 @@ const test = async function() {
   });
 }
 
-async function getTracksInfo(username, userid) {
+const getTracksInfo = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
   trackIDs = [];
