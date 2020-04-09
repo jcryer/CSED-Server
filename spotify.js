@@ -26,7 +26,7 @@ function finaliseAuth(authCode) {
   });
 }
 
-async function test(trackIDs) {
+const test = async function() {
   return new Promise(function(resolve, reject) {
     spotifyApi.getTracks(trackIDs).then(
       function (data) {
