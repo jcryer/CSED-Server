@@ -31,13 +31,13 @@ const getTracksInfo = async function(username, userid) {
   var listens = await database.getListenInfo(userid);
 
   trackIDs = [];
-  tracks = {};
+  tracks = [];
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0) {
       var tList = await spotifyApi.getTracks(trackIDs);
       tList.body.tracks.forEach(function(t) {
-        tracks[trackIDs[i]] = {'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri };
+        tracks.push({'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri, 'listen': listens[i] });
       });
       trackIDs = [];
     }
@@ -46,7 +46,7 @@ const getTracksInfo = async function(username, userid) {
   if (trackIDs.length > 0) {
     var tList = await spotifyApi.getTracks(trackIDs);
     tList.body.tracks.forEach(function(t) {
-      tracks[trackIDs[i]] = {'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri };
+      tracks.push({'artist': t.artists[0].name, 'name': t.name, 'uri': t.uri, 'listen': listens[i] });
     });
   }
   return tracks;
