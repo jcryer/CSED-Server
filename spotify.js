@@ -26,6 +26,16 @@ function finaliseAuth(authCode) {
   });
 }
 
+async function test(trackIDs) {
+  return new Promise(function(resolve, reject) {
+    spotifyApi.getTracks(trackIDs).then(
+      function (data) {
+        resolve(data);
+      }
+    );
+  });
+}
+
 async function getTracksInfo(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
@@ -36,7 +46,7 @@ async function getTracksInfo(username, userid) {
     trackIDs.push(listen.songid);
     iter++;
     if (iter % 48) {
-      var tList = await spotifyApi.getTracks(trackIDs);
+      var tList = await test(trackIDs);
       tList.body.tracks.forEach(function(t) {
         tracks.push(t);
       });
@@ -44,7 +54,7 @@ async function getTracksInfo(username, userid) {
   });
 
   if (trackIDs.length > 0) {
-    var tList = await spotifyApi.getTracks(trackIDs);
+    var tList = await test(trackIDs);
     tList.body.tracks.forEach(function(t) {
       tracks.push(t);
     });
