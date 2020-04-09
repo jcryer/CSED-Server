@@ -26,6 +26,13 @@ function finaliseAuth(authCode) {
   });
 }
 
+async function getTracksInfo(username, userid) {
+  var x = getAccessToken(username);
+  var y = database.getListenInfo(userid);
+  return y;
+}
+
+/*
 function getTracksInfo(username, userid) {
   return new Promise(function(resolve, reject) {
     getAccessToken(username).then(
@@ -86,7 +93,7 @@ function getTracksInfo(username, userid) {
     });
   });
 }
-
+*/
 function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
     database.getRefreshToken(username).then(
