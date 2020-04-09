@@ -61,16 +61,17 @@ function getTracksInfo(username, userid) {
               function (trackObjs) {
                 trackObjs.body.tracks.forEach(function(t) {
                   tracks.push(t);
-                });
-                return tracks;
-              }
+                }
+              )}
             ).catch(function(error) {
               console.error(error);
             });
           }
-          else {
-            return tracks;
+
+          while (tracks.length < listens.length) {
+            continue;
           }
+          return tracks;
         }
       )
       .then(function(obj) {
