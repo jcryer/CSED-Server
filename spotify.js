@@ -39,7 +39,6 @@ const test = async function() {
 const getTracksInfo = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
-  var xxx = await test(trackIDs);
 
   trackIDs = [];
   tracks = [];
