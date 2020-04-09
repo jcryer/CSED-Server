@@ -42,13 +42,9 @@ function getTracksInfo(username, userid) {
             trackIDs.push(listen.songid);
             iter ++;
             if (iter % 48 == 0) {
-              console.log(trackIDs);
               spotifyApi.getTracks(trackIDs).then(
                 function (trackObjs) {
-                  
                   tracks = tracks.concat(trackObjs.body.tracks);
-                  console.log("TrackObjs: ");
-                  console.log(trackObjs.body.tracks);
                 }
               ).catch(function(error) {
                 console.error(error);
@@ -56,9 +52,7 @@ function getTracksInfo(username, userid) {
               trackIDs = [];
             }
 
-          });          
-          console.log("AAAAAAA");
-          console.log(tracks);
+          });
           return tracks;
         }
       )
