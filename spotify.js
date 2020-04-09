@@ -28,11 +28,13 @@ function finaliseAuth(authCode) {
 
 const test = async function() {
   return new Promise(function(resolve, reject) {
+    resolve("test");
+    /*
     spotifyApi.getTracks(trackIDs).then(
       function (data) {
         resolve(data);
       }
-    );
+    );*/
   });
 }
 
