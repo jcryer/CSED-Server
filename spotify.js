@@ -44,8 +44,10 @@ function getTracksInfo(username, userid) {
             if (iter % 48 == 0) {
               spotifyApi.getTracks(trackIDs).then(
                 function (trackObjs) {
-                  tracks = tracks.concat(trackObjs.body.tracks);
-                }
+                  trackObjs.body.tracks.forEach(function(t) {
+                    tracks.push(t);
+                  }
+                )}
               ).catch(function(error) {
                 console.error(error);
               });
