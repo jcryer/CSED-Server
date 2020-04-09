@@ -27,9 +27,29 @@ function finaliseAuth(authCode) {
 }
 
 async function getTracksInfo(username, userid) {
-  var x = getAccessToken(username);
-  var y = database.getListenInfo(userid);
-  return y;
+  await getAccessToken(username);
+  var listens = await database.getListenInfo(userid);
+  trackIDs = [];
+  tracks = [];
+  iter = 0;
+  listens.forEach(function(listen) {
+    trackIDs.push(listen.songid);
+    iter++;
+    if (iter % 48) {
+      var tList = await spotifyApi.getTracks(trackIDs);
+      tList.body.tracks.forEach(function(t) {
+        tracks.push(t);
+      });
+    }
+  });
+
+  if (trackIDs.length > 0) {
+    var tList = await spotifyApi.getTracks(trackIDs);
+    tList.body.tracks.forEach(function(t) {
+      tracks.push(t);
+    });
+  }
+  return tracks;
 }
 
 /*
