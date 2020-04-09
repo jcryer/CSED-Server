@@ -29,10 +29,10 @@ function finaliseAuth(authCode) {
 function getTracksInfo(userid) {
   return new Promise(function(resolve, reject) {
     database.getListenInfo(userid).then(
-
+      
       function (listens) {
         console.log("GOT LISTEN INFO");
-
+        
         trackIDs = [];
         tracks = [];
         iter = 0
@@ -40,22 +40,28 @@ function getTracksInfo(userid) {
           trackIDs.push(listen.songid);
           iter ++;
           if (iter % 48 == 0) {
+            console.log(trackIDs);
             spotifyApi.getTracks(trackIDs).then(
               function (trackObjs) {
+                console.log("TrackObjs: ");
+                console.log(trackObjs);
+                /*
                 tracks = tracks.concat(trackObjs.tracks);
                 console.log("TrackObjs: ");
                 console.log(trackObjs);
-                trackIDs = [];
+                trackIDs = [];*/
               }
             );
           }
 
         });
+        resolve([{'artist': "Dodie", 'name': "Human", 'uri': "fgjrughee8r34r2r3ry32"}]);
+        /*
         console.log("AAAAAAA");
         console.log(tracks);
-        return tracks;
+        return tracks;*/
       }
-    ).then(function(obj) {
+    );/*.then(function(obj) {
       console.log("GOT TRACKS");
       console.log(obj);
       tracks = [];
@@ -63,7 +69,7 @@ function getTracksInfo(userid) {
         tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
       });
       resolve(tracks);
-    })
+    })*/
   });
 }
 function getAccessToken(username) {
