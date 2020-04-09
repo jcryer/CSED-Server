@@ -38,8 +38,9 @@ const getTracksInfo = async function(username, userid) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0) {
       var tList = await spotifyApi.getTracks(trackIDs);
-      for (var j = 0; j < tList.length; j++) {
-        tracks.push({'artist': tList[j].artists[0].name, 'name': tList[j].name, 'uri': tList[j].uri, 'listen': listens[stopped + j] });
+      var actualList = tList.body.tracks;
+      for (var j = 0; j < actualList.length; j++) {
+        tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
         console.log(stopped + j);
       }
       stopped = i;
@@ -49,9 +50,10 @@ const getTracksInfo = async function(username, userid) {
 
   if (trackIDs.length > 0) {
     var tList = await spotifyApi.getTracks(trackIDs);
-    for (var j = 0; j < tList.length; j++) {
+    var actualList = tList.body.tracks;
+    for (var j = 0; j < actualList.length; j++) {
       console.log(stopped + j);
-      tracks.push({'artist': tList[j].artists[0].name, 'name': tList[j].name, 'uri': tList[j].uri, 'listen': listens[stopped + j] });
+      tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
     }
   }
   console.log(tracks);
