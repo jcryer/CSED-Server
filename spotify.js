@@ -44,15 +44,19 @@ function getTracksInfo(userid) {
               function (trackObjs) {
                 Array.prototype.push.apply(tracks, trackObjs);
                 console.log(trackIDs);
+                console.log(trackObjs);
                 trackIDs = [];
               }
             );
           }
+          console.log("AAAAAAA");
+          console.log(tracks);
           return tracks;
         });
       }
     ).then(function(obj) {
       console.log("GOT TRACKS");
+      console.log(obj);
       tracks = [];
       obj.forEach(function(track) {
         tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
@@ -109,8 +113,8 @@ setInterval(dataListener, 30000);
 
 
 module.exports.getTracksInfo = getTracksInfo;
- module.exports.getData = getData;
- module.exports.finaliseAuth = finaliseAuth;
+module.exports.getData = getData;
+module.exports.finaliseAuth = finaliseAuth;
 
 
 

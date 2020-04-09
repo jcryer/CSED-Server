@@ -71,7 +71,6 @@ function getListenInfo(userid) {
     });
 }
 
-
 function addUser(username, password) {
     return new Promise(function(resolve, reject) {
         argon2.hash(password).then((hash) => {
