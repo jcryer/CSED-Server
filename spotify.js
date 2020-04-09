@@ -42,17 +42,18 @@ function getTracksInfo(userid) {
           if (iter % 48 == 0) {
             spotifyApi.getTracks(trackIDs).then(
               function (trackObjs) {
-                Array.prototype.push.apply(tracks, trackObjs);
-                console.log(trackIDs);
+                tracks = tracks.concat(trackObjs.tracks);
+                console.log("TrackObjs: ");
                 console.log(trackObjs);
                 trackIDs = [];
               }
             );
           }
-          console.log("AAAAAAA");
-          console.log(tracks);
-          return tracks;
+
         });
+        console.log("AAAAAAA");
+        console.log(tracks);
+        return tracks;
       }
     ).then(function(obj) {
       console.log("GOT TRACKS");
