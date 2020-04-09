@@ -143,7 +143,11 @@ router.get('/connect', verifyToken, function(req, res) {
 
   router.get('/testData', verifyToken, async function(req, res) {
     var data = await spotify.getTracksInfo(req.user.username, req.user.id);
-    res.send(JSON.stringify(data));
+    var output = "";
+    for (var i = 0; i < data.length; i++) {
+      output += i + ": " + data.name + ", by " + data.artist + "  | " + data.uri + "<br><br>";
+    }
+    res.send(output);
 });
 
 module.exports = router;
