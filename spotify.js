@@ -55,10 +55,22 @@ function getTracksInfo(username, userid) {
             }
 
           });
-          while (tracks.length < listens.length) {
-            continue;
+
+          if (trackIDs.length > 0) {
+            spotifyApi.getTracks(trackIDs).then(
+              function (trackObjs) {
+                trackObjs.body.tracks.forEach(function(t) {
+                  tracks.push(t);
+                });
+                return tracks;
+              }
+            ).catch(function(error) {
+              console.error(error);
+            });
           }
-          return tracks;
+          else {
+            return tracks;
+          }
         }
       )
       .then(function(obj) {
