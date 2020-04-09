@@ -51,7 +51,9 @@ function getTracksInfo(userid) {
                 console.log(trackObjs);
                 trackIDs = [];*/
               }
-            );
+            ).catch(function(error) {
+              console.error(error);
+            });;
           }
 
         });
