@@ -142,7 +142,7 @@ router.get('/connect', verifyToken, function(req, res) {
   });
 
   router.get('/testData', verifyToken, function(req, res) {
-    spotify.getTracksInfo(req.user.id).then(
+    spotify.getTracksInfo(req.user.username, req.user.id).then(
       function(data) {
         res.send(JSON.stringify(data));
       }
