@@ -51,6 +51,7 @@ const getTracksInfo = async function(username, userid) {
       tracks.push({'artist': tList[j].artists[0].name, 'name': tList[j].name, 'uri': tList[j].uri, 'listen': listens[stopped + j] });
     }
   }
+  console.log(tracks);
   return tracks;
 }
 
