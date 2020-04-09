@@ -39,6 +39,7 @@ const getTracksInfo = async function(username, userid) {
       var tList = await spotifyApi.getTracks(trackIDs);
       for (var j = 0; j < tList.length; j++) {
         tracks.push({'artist': tList[j].artists[0].name, 'name': tList[j].name, 'uri': tList[j].uri, 'listen': listens[stopped + j] });
+        console.log(stopped + j);
       }
       stopped = i;
       trackIDs = [];
@@ -48,6 +49,7 @@ const getTracksInfo = async function(username, userid) {
   if (trackIDs.length > 0) {
     var tList = await spotifyApi.getTracks(trackIDs);
     for (var j = 0; j < tList.length; j++) {
+      console.log(stopped + j);
       tracks.push({'artist': tList[j].artists[0].name, 'name': tList[j].name, 'uri': tList[j].uri, 'listen': listens[stopped + j] });
     }
   }
