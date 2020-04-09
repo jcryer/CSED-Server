@@ -28,32 +28,32 @@ function finaliseAuth(authCode) {
 
 const test = async function() {
   return new Promise(function(resolve, reject) {
-    resolve("test");
-    /*
     spotifyApi.getTracks(trackIDs).then(
       function (data) {
         resolve(data);
       }
-    );*/
+    );
   });
 }
 
 const getTracksInfo = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
+  var xxx = await test(trackIDs);
+
   trackIDs = [];
   tracks = [];
   iter = 0;
-  listens.forEach(function(listen) {
-    trackIDs.push(listen.songid);
-    iter++;
-    if (iter % 48) {
+  for (let i = 0; i < listens.count; i++) {
+    trackIDs.push(listens[i].songid);
+    if (i % 48 == 0) {
       var tList = await test(trackIDs);
       tList.body.tracks.forEach(function(t) {
         tracks.push(t);
       });
+      trackIDs = [];
     }
-  });
+  }
 
   if (trackIDs.length > 0) {
     var tList = await test(trackIDs);

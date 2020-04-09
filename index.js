@@ -141,12 +141,9 @@ router.get('/connect', verifyToken, function(req, res) {
       res.send("aaa");
   });
 
-  router.get('/testData', verifyToken, function(req, res) {
-    spotify.getTracksInfo(req.user.username, req.user.id).then(
-      function(data) {
-        res.send(JSON.stringify(data));
-      }
-    )
+  router.get('/testData', verifyToken, async function(req, res) {
+    var data = await spotify.getTracksInfo(req.user.username, req.user.id);
+    res.send(JSON.stringify(data));
 });
 
 module.exports = router;
