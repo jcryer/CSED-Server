@@ -49,11 +49,11 @@ function getTracksInfo(username, userid) {
                   tracks = tracks.concat(trackObjs.body.tracks);
                   console.log("TrackObjs: ");
                   console.log(trackObjs.body.tracks);
-                  trackIDs = [];
                 }
               ).catch(function(error) {
                 console.error(error);
-              });;
+              });
+              trackIDs = [];
             }
 
           });          
@@ -63,7 +63,7 @@ function getTracksInfo(username, userid) {
         }
       )
       .then(function(obj) {
-        console.log("GOT TRACKS");
+        console.log("GOT TRACKS NEW");
         console.log(obj);
         tracks = [];
         obj.forEach(function(track) {
