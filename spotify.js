@@ -50,8 +50,12 @@ const getTracksInfo = async function(username, userid) {
       tracks.push(t);
     });
   }
-  console.log(tracks);
-  return tracks;
+
+  output = [];
+  tracks.forEach(function(track) {
+    output.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
+  });
+  return output;
 }
 
 /*
