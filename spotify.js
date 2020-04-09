@@ -55,6 +55,9 @@ function getTracksInfo(username, userid) {
             }
 
           });
+          while (tracks.length < listens.length) {
+            continue;
+          }
           return tracks;
         }
       )
