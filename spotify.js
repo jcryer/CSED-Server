@@ -50,6 +50,7 @@ const getTracksInfo = async function(username, userid) {
       tracks.push(t);
     });
   }
+  console.log(tracks);
   return tracks;
 }
 
