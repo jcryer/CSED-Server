@@ -33,6 +33,7 @@ const getTracksInfo = async function(username, userid) {
   trackIDs = [];
   tracks = [];
   var stopped = 0;
+  console.log(listens.length);
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0) {
