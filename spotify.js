@@ -36,13 +36,13 @@ const getTracksInfo = async function(username, userid) {
   console.log(listens.length);
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
-    if (i % 48 == 0) {
+    if (i % 48 == 0 && i != 0) {
       var tList = await spotifyApi.getTracks(trackIDs);
       var actualList = tList.body.tracks;
       for (var j = 0; j < actualList.length; j++) {
         tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
-        console.log(stopped + j);
       }
+
       stopped = i;
       trackIDs = [];
     }
@@ -52,7 +52,6 @@ const getTracksInfo = async function(username, userid) {
     var tList = await spotifyApi.getTracks(trackIDs);
     var actualList = tList.body.tracks;
     for (var j = 0; j < actualList.length; j++) {
-      console.log(stopped + j);
       tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
     }
   }
