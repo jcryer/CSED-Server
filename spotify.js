@@ -66,7 +66,7 @@ async function sortUserSongs(username, userid) {
   var playlistNext = true;
 
   while (playlistNext) {
-    var playlists = await spotifyApi.getUserPlaylists({limit: 50});
+    var playlists = (await spotifyApi.getUserPlaylists({limit: 50})).body;
     console.log(playlists);
     if (playlists.next == null) {
       playlistNext = false;
@@ -78,7 +78,7 @@ async function sortUserSongs(username, userid) {
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
-        var tracks = await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'});
+        var tracks = (await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'})).body;
         if (tracks.next == null) {
           trackNext = false;
         }
