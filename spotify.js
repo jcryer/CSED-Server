@@ -78,7 +78,6 @@ async function sortUserSongs(username, userid) {
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
-        sleep(100);
         var tracks = (await getTracks(3)).body;
         if (tracks.next == null) {
           trackNext = false;
