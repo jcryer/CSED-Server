@@ -224,20 +224,20 @@ function classify (track) {
 
   answer = 0;
 
-  if (track.valence >= 0.6) valence = 1;
-  else if (track.valence <= 0.4) valence = -1;
+  if (track.valence >= 0.7) valence = 1;
+  else if (track.valence <= 0.3) valence = -1;
 
-  if (track.energy >= 0.6) energy = 1;
-  else if (track.energy <= 0.4) energy = -1;
+  if (track.energy >= 0.7) energy = 1;
+  else if (track.energy <= 0.3) energy = -1;
 
-  if (track.acousticness >= 0.6) acousticness = 1;
-  else if (track.acousticness <= 0.4) acousticness = -1;
+  if (track.acousticness >= 0.7) acousticness = 1;
+  else if (track.acousticness <= 0.3) acousticness = -1;
 
-  if (track.instrumentalness >= 0.6) instrumentalness = 1;
-  else if (track.instrumentalness <= 0.4) instrumentalness = -1;
+  if (track.instrumentalness >= 0.7) instrumentalness = 1;
+  else if (track.instrumentalness <= 0.3) instrumentalness = -1;
 
-  if (track.danceability >= 0.6) danceability = 1;
-  else if (track.danceability <= 0.4) danceability = -1;
+  if (track.danceability >= 0.7) danceability = 1;
+  else if (track.danceability <= 0.3) danceability = -1;
 
   if (valence == 1) {
     /*
