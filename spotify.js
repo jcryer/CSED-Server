@@ -152,7 +152,7 @@ const getTracks = async (args, retries) => {
   } catch (e) {
     if (retries > 0) {
       console.error(e);
-      await asyncTimeout(
+      await sleep(
         e.headers['retry-after'] ?
           parseInt(e.headers['retry-after']) * 1000 :
           RETRY_INTERVAL
@@ -162,6 +162,10 @@ const getTracks = async (args, retries) => {
     throw e;
   }
 };
+
+function sleep(millis) {
+  return new Promise(resolve => setTimeout(resolve, millis));
+}
 
 setInterval(dataListener, 30000);
 
