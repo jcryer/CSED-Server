@@ -76,6 +76,7 @@ async function sortUserSongs(username, userid) {
     }
     console.log("pass");
     for (var i = 0; i < playlists.items.length; i++) {
+      console.log(playlists.items[i].name + " - " + i);
       var trackNext = true;
       while (trackNext) {
         var tracks = (await getTracks(playlists.items[i].id, 3)).body;
@@ -152,7 +153,7 @@ const getTracks = async (args, retries) => {
   } catch (e) {
     if (retries > 0) {
       console.error(e);
-      await sleep(2000);
+      await sleep(5000);
       return getTracks(args, retries - 1);
     }
     throw e;
