@@ -163,9 +163,14 @@ router.get('/testing2', verifyToken, async function(req, res) {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
   var output = "testing2<br><br>";
 
+  try {
   for (var i in data) {
     output += i + ": <b>" + data[i].name + "</b>, by " + data[i].artists[0].name + "<br><br>";
   }
+}
+catch (e) {
+  console.error(e);
+}
   res.send(output);
 });
 
