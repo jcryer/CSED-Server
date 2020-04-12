@@ -78,6 +78,7 @@ async function sortUserSongs(username, userid) {
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
+        sleep(50);
         var tracks = (await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'})).body;
         if (tracks.next == null) {
           trackNext = false;
@@ -143,6 +144,10 @@ function dataListener() {
       );
     }
   );
+}
+
+function sleep(millis) {
+  return new Promise(resolve => setTimeout(resolve, millis));
 }
 
 setInterval(dataListener, 30000);
