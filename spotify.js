@@ -111,6 +111,7 @@ const getSortedTracksInfo = async function(tracks) {
   var keys = Object.keys(tracks);
 
   for (var i = 0; i <= keys.length; i+=48) {
+    console.log(keys.slice(i, i+48));
     var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
     for (var j = 0; j < data.length; j++) {
       tracks[data[j].id].features = data[j];
@@ -118,7 +119,6 @@ const getSortedTracksInfo = async function(tracks) {
   }
   return tracks;
 }
-
 
 function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
