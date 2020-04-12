@@ -67,6 +67,7 @@ async function sortUserSongs(username, userid) {
 
   while (playlistNext) {
     var playlists = await spotifyApi.getUserPlaylists({limit: 50});
+    console.log(playlists);
     if (playlists.next == null) {
       playlistNext = false;
     }
