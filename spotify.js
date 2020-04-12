@@ -37,7 +37,7 @@ const getTracksInfo = async function(username, userid) {
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0 && i != 0) {
-      var tList = await spotifyApi.getTracks(playlists.items[i].id, trackIDs);
+      var tList = await spotifyApi.getTracks(trackIDs);
       var actualList = tList.body.tracks;
       for (var j = 0; j < actualList.length; j++) {
         tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
@@ -78,7 +78,7 @@ async function sortUserSongs(username, userid) {
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
-        var tracks = (await getTracks(3)).body;
+        var tracks = (await getTracks(playlists.items[i].id, 3)).body;
         if (tracks.next == null) {
           trackNext = false;
         }
