@@ -101,6 +101,7 @@ async function sortUserSongs(username, userid) {
   catch (e) {
     console.log(e);
   }
+  console.log(allTracks);
   return allTracks;
 }
 
