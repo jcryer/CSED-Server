@@ -90,7 +90,7 @@ async function sortUserSongs(username, userid) {
         }
         for (var j = 0; j < tracks.items.length; j++) {
           var item = tracks.items[j].track;
-          if (!(item.id in allTracks)) {
+          if (!(item.id in allTracks) && item.id != null) {
 
             allTracks[item.id] = item;
           }
