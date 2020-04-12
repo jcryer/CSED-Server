@@ -162,10 +162,9 @@ router.get('/api/getTracks', verifyToken, async function(req, res) {
 router.get('/testing2', verifyToken, async function(req, res) {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
   var output = "testing2<br><br>";
-
   try {
   for (var i in data) {
-    output += i + ": <b>" + data[i].name + "</b>, by " + data[i].artists[0].name + "<br><br>";
+    output += i + ": <b>" + data[i].name + "</b>, by " + data[i].artists[0].name + data[i].features.liveness + "<br><br>";
   }
 }
 catch (e) {

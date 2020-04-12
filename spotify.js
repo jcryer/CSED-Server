@@ -103,9 +103,22 @@ async function sortUserSongs(username, userid) {
   catch (e) {
     console.log(e);
   }
-  console.log(allTracks);
+  allTracks = await getSortedTracksInfo(allTracks);
   return allTracks;
 }
+
+const getSortedTracksInfo = async function(tracks) {
+  var keys = Object.keys(tracks);
+
+  for (var i = 0; i <= keys.length; i+=48) {
+    var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
+    for (var j = 0; j < data.length; j++) {
+      tracks[data[j].id].features = data[j];
+    }
+  }
+  return tracks;
+}
+
 
 function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
@@ -160,6 +173,20 @@ const getTracks = async (id, offsetVal, retries) => {
       console.error(e);
       await sleep(1000);
       return getTracks(args, retries - 1);
+    }
+    throw e;
+  }
+};
+
+const getTracksFeatures = async (ids, retries) => {
+  try {
+    const response = await spotifyApi.getAudioFeaturesForTracks(ids);
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      console.error(e);
+      await sleep(1000);
+      return getTracksFeatures(args, retries - 1);
     }
     throw e;
   }
