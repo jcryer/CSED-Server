@@ -62,6 +62,7 @@ async function sortUserSongs(username, userid) {
 
   await getAccessToken(username);
 
+  try {
   var allTracks = {};
   var playlistNext = true;
 
@@ -93,7 +94,10 @@ async function sortUserSongs(username, userid) {
       }
     }
   }
-
+  }
+  catch (e) {
+    console.log(e);
+  }
   return allTracks;
 }
 
