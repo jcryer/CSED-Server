@@ -89,10 +89,10 @@ async function sortUserSongs(username, userid) {
           break;
         }
         for (var j = 0; j < tracks.items.length; j++) {
-          var item = tracks.items[j];
+          var item = tracks.items[j].track;
           if (!item.id in allTracks) {
 
-            allTracks[item.track.id] = item.track;
+            allTracks[item.id] = item;
           }
 
         }
