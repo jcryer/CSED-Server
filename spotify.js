@@ -67,7 +67,6 @@ async function sortUserSongs(username, userid) {
 
   while (playlistNext) {
     var playlists = (await spotifyApi.getUserPlaylists({limit: 50})).body;
-    console.log(playlists);
     if (playlists.next == null) {
       playlistNext = false;
     }
@@ -81,6 +80,9 @@ async function sortUserSongs(username, userid) {
         var tracks = (await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'})).body;
         if (tracks.next == null) {
           trackNext = false;
+        }
+        if (playlists.items == undefined) {
+          break;
         }
         for (var j = 0; j < tracks.items.length; j++) {
           var item = tracks.items[j];
