@@ -78,8 +78,8 @@ async function sortUserSongs(username, userid) {
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
-        sleep(50);
-        var tracks = (await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'})).body;
+        sleep(100);
+        var tracks = (await getTracks(3)).body;
         if (tracks.next == null) {
           trackNext = false;
         }
@@ -146,9 +146,23 @@ function dataListener() {
   );
 }
 
-function sleep(millis) {
-  return new Promise(resolve => setTimeout(resolve, millis));
-}
+const getTracks = async (retries) => {
+  try {
+    const response = await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'});
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      console.error(e);
+      await asyncTimeout(
+        e.headers['retry-after'] ?
+          parseInt(e.headers['retry-after']) * 1000 :
+          RETRY_INTERVAL
+      );
+      return getTracks(args, retries - 1);
+    }
+    throw e;
+  }
+};
 
 setInterval(dataListener, 30000);
 
