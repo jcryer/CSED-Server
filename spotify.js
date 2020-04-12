@@ -66,10 +66,14 @@ async function sortUserSongs(username, userid) {
   var playlistNext = true;
 
   while (playlistNext) {
-    var playlists = await spotifyApi.getUserPlaylists();
+    var playlists = await spotifyApi.getUserPlaylists({limit: 50});
     if (playlists.next == null) {
       playlistNext = false;
     }
+    if (playlists.items == undefined) {
+      break;
+    }
+    console.log("pass");
     for (var i = 0; i < playlists.items.length; i++) {
       var trackNext = true;
       while (trackNext) {
