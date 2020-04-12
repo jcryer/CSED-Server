@@ -150,4 +150,23 @@ router.get('/connect', verifyToken, function(req, res) {
     res.send(output);
 });
 
+router.get('/api/getTracks', verifyToken, async function(req, res) {
+  var data = await spotify.getTracksInfo(req.user.username, req.user.id);
+  var output = "test<br><br>";
+  for (var i = 0; i < data.length; i++) {
+    output += i+1 + ": <b>" + data[i].name + "</b>, by " + data[i].artist + "  | " + data[i].listen.played + " | <a href='" + data[i].uri + "'>Click here</a><br><br>";
+  }
+  res.send(output);
+});
+
+router.get('/testing2', verifyToken, async function(req, res) {
+  var data = await spotify.sortUserSongs(req.user.username, req.user.id);
+  var output = "testing2<br><br>";
+
+  for (var i in data) {
+    output += i + ": <b>" + data[i].name + "</b>, by " + data[i].artists[0].name + "<br><br>";
+  }
+  res.send(output);
+});
+
 module.exports = router;

@@ -58,102 +58,38 @@ const getTracksInfo = async function(username, userid) {
   return tracks;
 }
 
-/*
-const getTracksInfo = async function(username, userid) {
-  await getAccessToken(username);
-  var listens = await database.getListenInfo(userid);
+async function sortUserSongs(username, userid) {
 
-  trackIDs = [];
-  tracks = [];
-  for (var i = 0; i < listens.length; i++) {
-    trackIDs.push(listens[i].songid);
-    if (i % 48 == 0) {
-      var tList = await spotifyApi.getTracks(trackIDs);
-      tList.body.tracks.forEach(function(t) {
-        tracks.push(t);
-      });
-      console.log(tracks.length);
-      trackIDs = [];
+  await getAccessToken(username);
+
+  var allTracks = {};
+  var playlistNext = true;
+
+  while (playlistNext) {
+    var playlists = await spotifyApi.getUserPlaylists();
+    if (playlists.next == null) {
+      playlistNext = false;
+    }
+    for (var i = 0; i < playlists.items.length; i++) {
+      var trackNext = true;
+      while (trackNext) {
+        var tracks = await spotifyApi.getPlaylistTracks(playlists.items[i].id, {limit: 100, fields: 'next,items(track(name,artists, id))'});
+        if (tracks.next == null) {
+          trackNext = false;
+        }
+        for (var j = 0; j < tracks.items.length; j++) {
+          var item = tracks.items[j];
+          if (!item.id in allTracks) {
+            allTracks[item.id] = item;
+          }
+        }
+      }
     }
   }
 
-  if (trackIDs.length > 0) {
-    var tList = await spotifyApi.getTracks(trackIDs);
-    tList.body.tracks.forEach(function(t) {
-      tracks.push(t);
-    });
-  }
-
-  output = [];
-  tracks.forEach(function(track) {
-    output.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
-  });
-  return output;
+  return allTracks;
 }
-*/
 
-/*
-function getTracksInfo(username, userid) {
-  return new Promise(function(resolve, reject) {
-    getAccessToken(username).then(
-    function () {
-      database.getListenInfo(userid).then(
-        
-        function (listens) {
-          console.log("GOT LISTEN INFO");
-          
-          trackIDs = [];
-          tracks = [];
-          iter = 0
-          listens.forEach(function(listen) {
-            trackIDs.push(listen.songid);
-            iter ++;
-            if (iter % 48 == 0) {
-              spotifyApi.getTracks(trackIDs).then(
-                function (trackObjs) {
-                  trackObjs.body.tracks.forEach(function(t) {
-                    tracks.push(t);
-                  }
-                )}
-              ).catch(function(error) {
-                console.error(error);
-              });
-              trackIDs = [];
-            }
-
-          });
-
-          if (trackIDs.length > 0) {
-            spotifyApi.getTracks(trackIDs).then(
-              function (trackObjs) {
-                trackObjs.body.tracks.forEach(function(t) {
-                  tracks.push(t);
-                }
-              )}
-            ).catch(function(error) {
-              console.error(error);
-            });
-          }
-
-          while (tracks.length < listens.length) {
-            continue;
-          }
-          return tracks;
-        }
-      )
-      .then(function(obj) {
-        console.log("GOT TRACKS NEW");
-        console.log(obj);
-        tracks = [];
-        obj.forEach(function(track) {
-          tracks.push({'artist': track.artists[0].name, 'name': track.name, 'uri': track.uri });
-        });
-        resolve(tracks);
-      })
-    });
-  });
-}
-*/
 function getAccessToken(username) {
   return new Promise(function(resolve, reject) {
     database.getRefreshToken(username).then(
@@ -200,6 +136,7 @@ function dataListener() {
 
 setInterval(dataListener, 30000);
 
+module.exports.sortUserSongs = sortUserSongs;
 
 module.exports.getTracksInfo = getTracksInfo;
 module.exports.getData = getData;
