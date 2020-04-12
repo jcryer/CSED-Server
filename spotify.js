@@ -104,6 +104,7 @@ async function sortUserSongs(username, userid) {
     console.log(e);
   }
   allTracks = await getSortedTracksInfo(allTracks);
+
   return allTracks;
 }
 
@@ -111,9 +112,9 @@ const getSortedTracksInfo = async function(tracks) {
   var keys = Object.keys(tracks);
 
   for (var i = 0; i <= keys.length; i+=48) {
-    console.log(keys.slice(i, i+48));
     var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
     for (var j = 0; j < data.length; j++) {
+      tracks[data[j].id].mood = classify(data[j]);
       tracks[data[j].id].features = data[j];
     }
   }
@@ -191,6 +192,149 @@ const getTracksFeatures = async (ids, retries) => {
     throw e;
   }
 };
+
+/*
+0: Neutral
+1: Happy
+2: Sad
+3: Calm
+4: Energetic
+5: Exuberant
+6: Lively
+7: Joyful
+8: Contentment
+9: Relaxing
+10: Frantic
+11: Depressing
+12: Melancholic
+13: For Concentration
+14: Motivational
+
+-1: negative
+0: neutral
+1: positive
+
+*/
+function classify (track) {
+  var valence = 0;
+  var energy = 0;
+  var acousticness = 0;
+  var instrumentalness = 0;
+  var danceability = 0;
+
+  answer = 0;
+
+  if (track.valence >= 0.6) valence = 1;
+  else if (track.valence <= 0.4) valence = -1;
+
+  if (track.energy >= 0.6) energy = 1;
+  else if (track.energy <= 0.4) energy = -1;
+
+  if (track.acousticness >= 0.6) acousticness = 1;
+  else if (track.acousticness <= 0.4) acousticness = -1;
+
+  if (track.instrumentalness >= 0.6) instrumentalness = 1;
+  else if (track.instrumentalness <= 0.4) instrumentalness = -1;
+
+  if (track.danceability >= 0.6) danceability = 1;
+  else if (track.danceability <= 0.4) danceability = -1;
+
+  if (valence == 1) {
+    /*
+    Happy, Exuberant, Lively, Joyful, Contentment, Relaxation
+    */
+   if (energy == 1) {
+      // Exuberant, Lively
+      if (danceability == 1) {
+        // Lively
+        return 6;
+      }
+      else {
+        // Exuberant
+        return 5;
+      }
+   }
+   else if (energy == -1) {
+     // Contentment, Relaxation
+     if (acousticness == 1 || instrumentalness == 1) {
+       // Relaxation
+       return 9;
+
+     }
+     else {
+       // Contentment
+       return 8;
+
+     }
+   }
+   else {
+     // Happy, Joyful
+     if (danceability == 1) {
+      // Joyful
+      return 7;
+    }
+    else {
+      // Happy
+      return 1;
+    }
+   }
+  }
+  else if (valence == -1) {
+    /*
+    Sad, Frantic, Depressing, Melancholic
+    */
+   if (energy == 1) {
+    // Frantic
+    return 10;
+    }
+    else if (energy == -1) {
+      // Depressing, Melancholic
+      if (acousticness == 1 || instrumentalness == 1) {
+        // Melancholic
+        return 12;
+      }
+      else {
+        // Depressing
+        return 11;
+      }
+      }
+    else {
+      // Sad
+      return 2;
+    }
+  }
+  else {
+    // Neutral, Calm, Energetic, For Concentration, Motivational
+    if (energy == 1) {
+      // Energetic, Motivational
+      if (acousticness == 1 || instrumentalness == 1) {
+        // Motivational
+        return 14;
+      }
+      else {
+        // Energetic
+        return 4;
+      }
+    }
+    else if (energy == -1) {
+      // Calm, For Concentration
+      if (acousticness == 1 || instrumentalness == 1) {
+        // For Concentration
+        return 13;
+      }
+      else {
+        // Calm
+        return 3;
+      }
+    }
+    else {
+      // Neutral
+      return 0;
+    }
+  }
+
+}
+
 
 function sleep(millis) {
   return new Promise(resolve => setTimeout(resolve, millis));
