@@ -152,11 +152,7 @@ const getTracks = async (args, retries) => {
   } catch (e) {
     if (retries > 0) {
       console.error(e);
-      await sleep(
-        e.headers['retry-after'] ?
-          parseInt(e.headers['retry-after']) * 1000 :
-          RETRY_INTERVAL
-      );
+      await sleep(2000);
       return getTracks(args, retries - 1);
     }
     throw e;
