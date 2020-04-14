@@ -166,10 +166,10 @@ router.get('/api/recentMoods', verifyToken, async function(req, res) {
   var output = "test<br><br>";
   for (var i = 0; i < data.length; i++) {
 
-    const diffTime = Math.abs(new Date(data[i].listen.played) - new Date());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    console.log(diffDays);
-    if (diffDays == 1) {
+    var yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+    var date = new Date(data[i].listen.played);
+
+    if (date.getDay() == yesterday.getDay() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
       output += i+1 + ": <b>" + data[i].name + "</b>, by " + data[i].artist + "  | " + data[i].listen.played + " | <a href='" + data[i].uri + "'>Click here</a><br><br>";
     }
   }
