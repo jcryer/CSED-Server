@@ -163,10 +163,12 @@ const moods = Object.freeze({0: "Neutral", 1: "Happy", 2: "Sad", 3: "Calm", 4: "
 
 router.get('/testing2', verifyToken, async function(req, res) {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
-  var output = "testing2<br><br>";
-
+  var output = "";
   for (var mood in moods) {
-    output += "<h2>" + moods[mood] + "</h2>";
+    output += "<a href='#" + mood + "'>" + moods[mood] + "</a><br>";
+  }
+  for (var mood in moods) {
+    output += "<h2 id='" + mood + "'>" + moods[mood] + "</h2>";
     var filtered = Object.keys(data).reduce(function (filtered, key) {
       if (data[key].mood == mood) filtered[key] = data[key];
       return filtered;
