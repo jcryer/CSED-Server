@@ -168,7 +168,7 @@ router.get('/testing2', verifyToken, async function(req, res) {
   for (var mood in moods) {
     output += "<h2>" + moods[mood] + "</h2>";
     var filtered = Object.keys(data).reduce(function (filtered, key) {
-      if (dict[key].mood == mood) filtered[key] = dict[key];
+      if (data[key].mood == mood) filtered[key] = data[key];
       return filtered;
     }, {});
     for (var i in filtered) {
