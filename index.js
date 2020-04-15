@@ -13,9 +13,7 @@ router = express.Router();
 dotenv.config();
 const verifyToken = async (req, res, next) => {
   var Cookies = JSON.stringify(req.cookies);
-  console.log(Cookies);
   var token = req.cookies.token || '';
-  console.log(token);
   try {
     if (!token) {
       return res.status(401).json('You need to Login')
@@ -61,7 +59,6 @@ router.post("/api/login", function (req, res, next) {
       }
     }
   )
-  console.log(req.body);
 });
 
 router.post("/api/register", function (req, res, next) {
@@ -92,7 +89,6 @@ router.post("/api/register", function (req, res, next) {
       }
     }
   )
-  console.log(req.body);
   //res.send("UH OH AGAIN");
 });
 
@@ -113,7 +109,6 @@ router.get("/getUsers", verifyToken, function (req, res, next) {
 
     var x = database.getUsers().then(
       function(data) {
-        console.log(data);
         res.send(data);
       });
 });
@@ -123,7 +118,6 @@ router.get('/connect', verifyToken, function(req, res) {
 
   database.getAuthToken(req.user.username).then(
     function (data) {
-      console.log(req.user.username);
 
       res.send('<a href="https://accounts.spotify.com/authorize' 
       + '?response_type=code' 
@@ -147,7 +141,6 @@ router.get('/connect', verifyToken, function(req, res) {
       }
     );
   });
-
 
   router.get('/info', verifyToken, function(req, res) {
       spotify.getData(req.user.username, req.user.id);

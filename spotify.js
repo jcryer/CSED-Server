@@ -26,6 +26,10 @@ function finaliseAuth(authCode) {
   });
 }
 
+const distinct = (value, index, self) => {
+  return self.indexOf(value) === index;
+}
+
 const getTracksInfo = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getListenInfo(userid);
@@ -33,7 +37,6 @@ const getTracksInfo = async function(username, userid) {
   trackIDs = [];
   tracks = [];
   var stopped = 0;
-  console.log(listens.length);
   for (var i = 0; i < listens.length; i++) {
     trackIDs.push(listens[i].songid);
     if (i % 48 == 0 && i != 0) {
@@ -74,9 +77,7 @@ async function sortUserSongs(username, userid) {
     if (playlists.items == undefined) {
       break;
     }
-    console.log("pass");
     for (var i = 0; i < playlists.items.length; i++) {
-      console.log(playlists.items[i].name + " - " + i);
       var trackNext = true;
       var offset = 0;
       while (trackNext) {
@@ -117,6 +118,26 @@ const getSortedTracksInfo = async function(tracks) {
       tracks[data[j].id].mood = classify(data[j]);
       tracks[data[j].id].features = data[j];
     }
+  }
+  return tracks;
+}
+
+const getNonUniqueSortedTracksInfo = async function(tracks) {
+  var keys = tracks.map(function(item) {
+    return item['id'];
+  }).filter(distinct);
+
+  var tracksInfo = {};
+  for (var i = 0; i <= keys.length; i+=48) {
+    var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
+    for (var j = 0; j < data.length; j++) {
+      tracksInfo[data[j].id] = classify(data[j]);
+    }
+  }
+
+  for (var i = 0; i < tracks.length; i++) {
+    tracks[i].mood = tracksInfo[tracks[i].id];
+
   }
   return tracks;
 }
@@ -197,22 +218,22 @@ const getRecentTracks = async function(username, userid) {
   await getAccessToken(username);
   var listens = await database.getYesterdayListenInfo(userid);
 
-  tracks = {};
+  tracks = [];
   var stopped = 0;
   for (var i = 0; i <= listens.length; i+=48) {
-      var listensIDs = listens.slice(i, i+20).map(function(item) {
+      var listensIDs = listens.slice(i, i+48).map(function(item) {
         return item['songid'];
       });
     var data = (await spotifyApi.getTracks(listensIDs)).body.tracks;
 
   }
     for (var j = 0; j < data.length; j++) {
-      tracks[data[j].id] = data[j];
-      tracks[data[j].id].listen = listens[stopped];
+      data[j].listen = listens[stopped];
+      tracks.push(data[j]);
       stopped += 1;
     }
   
-  tracks = await getSortedTracksInfo(tracks);
+  tracks = await getNonUniqueSortedTracksInfo(tracks);
   return tracks;
 }
 

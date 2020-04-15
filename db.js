@@ -69,7 +69,6 @@ function getListenInfo(userid) {
     });
 }
 
-
 function getYesterdayListenInfo(userid) {
     return new Promise(function(resolve, reject) {
         Listens.find({'userid': userid}, function(err, listens) {
@@ -82,11 +81,11 @@ function getYesterdayListenInfo(userid) {
                     listenMap.push(listen);
                 }
             });
+            console.log(listenMap);
             resolve(listenMap);
         });
     });
 }
-
 
 function addUser(username, password) {
     return new Promise(function(resolve, reject) {
