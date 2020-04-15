@@ -59,17 +59,34 @@ function addListenInfo(data, userid) {
 function getListenInfo(userid) {
     return new Promise(function(resolve, reject) {
         Listens.find({'userid': userid}, function(err, listens) {
-            console.log("Getting LISTEN INFO");
 
             var listenMap = [];
             listens.forEach(function(listen) {
                 listenMap.push(listen);
             });
-            console.log("GOT LISTEN INFO");
             resolve(listenMap);
         });
     });
 }
+
+
+function getYesterdayListenInfo(userid) {
+    return new Promise(function(resolve, reject) {
+        Listens.find({'userid': userid}, function(err, listens) {
+            var yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+
+            var listenMap = [];
+            listens.forEach(function(listen) {
+                var date = new Date(listen.played);
+                if (date.getDate() == yesterday.getDate() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
+                    listenMap.push(listen);
+                }
+            });
+            resolve(listenMap);
+        });
+    });
+}
+
 
 function addUser(username, password) {
     return new Promise(function(resolve, reject) {
@@ -173,6 +190,7 @@ function checkIfUserExists(username) {
 module.exports.generateToken = generateToken;
 
 module.exports.getListenInfo = getListenInfo;
+module.exports.getYesterdayListenInfo = getYesterdayListenInfo;
 module.exports.addUser = addUser;
 module.exports.addListenInfo = addListenInfo;
 

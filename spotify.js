@@ -193,6 +193,29 @@ const getTracksFeatures = async (ids, retries) => {
   }
 };
 
+const getRecentTracks = async function(username, userid) {
+  await getAccessToken(username);
+  var listens = await database.getYesterdayListenInfo(userid);
+
+  tracks = {};
+  var stopped = 0;
+  for (var i = 0; i <= listens.length; i+=48) {
+      var listensIDs = listens.slice(i, i+20).map(function(item) {
+        return item['songid'];
+      });
+    var data = (await spotifyApi.getTracks(listensIDs)).body.tracks;
+
+  }
+    for (var j = 0; j < data.length; j++) {
+      tracks[data[j].id] = data[j];
+      tracks[data[j].id].listen = listens[stopped];
+      stopped += 1;
+    }
+  
+  tracks = await getSortedTracksInfo(tracks);
+  return tracks;
+}
+
 /*
 0: Neutral
 1: Happy
@@ -209,6 +232,25 @@ const getTracksFeatures = async (ids, retries) => {
 12: Melancholic
 13: For Concentration
 14: Motivational
+
+0: Neutral
+1: Happy
+5: Exuberant
+7: Joyful
+
+3: Calm
+8: Contentment
+9: Relaxing
+13: For Concentration
+14: Motivational
+
+6: Lively
+10: Frantic
+4: Energetic
+
+11: Depressing
+12: Melancholic
+2: Sad
 
 -1: negative
 0: neutral
@@ -347,7 +389,7 @@ module.exports.sortUserSongs = sortUserSongs;
 module.exports.getTracksInfo = getTracksInfo;
 module.exports.getData = getData;
 module.exports.finaliseAuth = finaliseAuth;
-
+module.exports.getRecentTracks = getRecentTracks;
 
 
 

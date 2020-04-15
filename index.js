@@ -96,6 +96,19 @@ router.post("/api/register", function (req, res, next) {
   //res.send("UH OH AGAIN");
 });
 
+router.get('/api/recentMoods', verifyToken, async function(req, res) {
+  var data = await spotify.getRecentTracks(req.user.username, req.user.id);
+  var output = "test<br><br>";
+  var out = [];
+  for (var key in data) {
+    var date = new Date(data[key].listen.played);
+
+    out.push({'hour': date.getHours(), 'mood': data[key].mood});
+  }
+  res.send("<pre>" + JSON.stringify(out, null, "\t") + "</pre>");
+
+});
+
 router.get("/getUsers", verifyToken, function (req, res, next) {
 
     var x = database.getUsers().then(
@@ -160,21 +173,6 @@ router.get('/api/getTracks', verifyToken, async function(req, res) {
 });
 
 const moods = Object.freeze({0: "Neutral", 1: "Happy", 2: "Sad", 3: "Calm", 4: "Energetic", 5: "Exuberance", 6: "Lively", 7: "Joyful", 8: "Contentment", 9: "Relaxing", 10: "Frantic", 11: "Depressing", 12: "Melancholic", 13: "For Concentration", 14: "Motivational" });
-
-router.get('/api/recentMoods', verifyToken, async function(req, res) {
-  var data = await spotify.getTracksInfo(req.user.username, req.user.id);
-  var output = "test<br><br>";
-  for (var i = 0; i < data.length; i++) {
-
-    var yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
-    var date = new Date(data[i].listen.played);
-
-    if (date.getDay() == yesterday.getDay() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
-      output += i+1 + ": <b>" + data[i].name + "</b>, by " + data[i].artist + "  | " + data[i].listen.played + " | <a href='" + data[i].uri + "'>Click here</a><br><br>";
-    }
-  }
-  res.send(output);
-});
 
 router.get('/moodClassification', verifyToken, async function(req, res) {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
