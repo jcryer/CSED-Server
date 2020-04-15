@@ -95,8 +95,6 @@ router.post("/api/register", function (req, res, next) {
 router.get('/api/recentMoods', verifyToken, async function(req, res) {
   var data = await spotify.getRecentTracks(req.user.username, req.user.id);
   var output = "test<br><br>";
-  console.log("4---");
-  console.log(data);
   var out = [];
   for (var key in data) {
     var date = new Date(data[key].listen.played);
@@ -116,7 +114,7 @@ router.get("/getUsers", verifyToken, function (req, res, next) {
 });
 
 router.get('/connect', verifyToken, function(req, res) {
- var scopes = 'user-read-playback-state streaming playlist-read-collaborative user-modify-playback-state playlist-modify-public user-top-read user-read-currently-playing playlist-read-private user-follow-read user-read-recently-played playlist-modify-private ';
+ var scopes = 'user-read-playback-state streaming playlist-read-collaborative user-library-read user-modify-playback-state playlist-modify-public user-top-read user-read-currently-playing playlist-read-private user-follow-read user-read-recently-played playlist-modify-private ';
 
   database.getAuthToken(req.user.username).then(
     function (data) {
@@ -171,7 +169,7 @@ const moods = Object.freeze({0: "Neutral", 1: "Happy", 2: "Sad", 3: "Calm", 4: "
 
 router.get('/moodClassification', verifyToken, async function(req, res) {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
-  var output = "";
+  var output = Object.keys(data).length + " <br>";
   for (var mood in moods) {
     output += "<a href='#" + mood + "'>" + moods[mood] + "</a>   ";
   }

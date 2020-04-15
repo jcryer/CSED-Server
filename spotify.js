@@ -66,40 +66,60 @@ async function sortUserSongs(username, userid) {
   await getAccessToken(username);
 
   try {
-  var allTracks = {};
-  var playlistNext = true;
+    var allTracks = {};
+    var playlistNext = true;
 
-  while (playlistNext) {
-    var playlists = (await spotifyApi.getUserPlaylists({limit: 50})).body;
-    if (playlists.next == null) {
-      playlistNext = false;
-    }
-    if (playlists.items == undefined) {
-      break;
-    }
-    for (var i = 0; i < playlists.items.length; i++) {
-      var trackNext = true;
-      var offset = 0;
-      while (trackNext) {
-        var tracks = (await getTracks(playlists.items[i].id, offset, 3)).body;
-        if (tracks.next == null) {
-          trackNext = false;
-        }
-        offset += 100;
-        if (playlists.items == undefined) {
-          break;
-        }
-        for (var j = 0; j < tracks.items.length; j++) {
-          var item = tracks.items[j].track;
-          if (!(item.id in allTracks) && item.id != null) {
-
-            allTracks[item.id] = item;
+    while (playlistNext) {
+      var playlists = (await spotifyApi.getUserPlaylists({limit: 50})).body;
+      if (playlists.next == null) {
+        playlistNext = false;
+      }
+      if (playlists.items == undefined) {
+        break;
+      }
+      for (var i = 0; i < playlists.items.length; i++) {
+        var trackNext = true;
+        var offset = 0;
+        while (trackNext) {
+          var tracks = (await getTracks(playlists.items[i].id, offset, 3)).body;
+          if (tracks.next == null) {
+            trackNext = false;
           }
+          offset += 100;
+          if (playlists.items == undefined) {
+            break;
+          }
+          for (var j = 0; j < tracks.items.length; j++) {
+            var item = tracks.items[j].track;
+            if (!(item.id in allTracks) && item.id != null) {
 
+              allTracks[item.id] = item;
+            }
+
+          }
         }
       }
     }
-  }
+
+    var likedNext = true;
+
+    var offset = 0;
+    while (likedNext) {
+      var liked = (await getLikedTracks(offset, 3)).body;
+      offset += 100;
+      if (liked.next == null) {
+        likedNext = false;
+      }
+      if (liked.items == undefined) {
+        break;
+      }
+      for (var i = 0; i < liked.items.length; i++) {
+        var item = liked.items[i].track;
+        if (!(item.id in allTracks) && item.id != null) {
+          allTracks[item.id] = item;
+        }      
+      }
+    }
   }
   catch (e) {
     console.log(e);
@@ -138,9 +158,6 @@ const getNonUniqueSortedTracksInfo = async function(tracks) {
   for (var i = 0; i < tracks.length; i++) {
     tracks[i].mood = tracksInfo[tracks[i].id];
   }
-  console.log("3---");
-  console.log(tracks);
-
   return tracks;
 }
 
@@ -196,7 +213,22 @@ const getTracks = async (id, offsetVal, retries) => {
     if (retries > 0) {
       console.error(e);
       await sleep(1000);
-      return getTracks(args, retries - 1);
+      return getTracks(id, offsetVal, retries - 1);
+    }
+    throw e;
+  }
+};
+
+const getLikedTracks = async (offsetVal, retries) => {
+  try {
+
+    const response = await spotifyApi.getMySavedTracks({limit: 50, offset: offsetVal});
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      console.error(e);
+      await sleep(1000);
+      return getLikedTracks(offsetVal, retries - 1);
     }
     throw e;
   }
@@ -210,7 +242,7 @@ const getTracksFeatures = async (ids, retries) => {
     if (retries > 0) {
       console.error(e);
       await sleep(1000);
-      return getTracksFeatures(args, retries - 1);
+      return getTracksFeatures(ids, retries - 1);
     }
     throw e;
   }
@@ -234,9 +266,6 @@ const getRecentTracks = async function(username, userid) {
       stopped += 1;
     }
   }
-  
-  console.log("1---");
-  console.log(tracks);
   
   tracks = await getNonUniqueSortedTracksInfo(tracks);
   return tracks;

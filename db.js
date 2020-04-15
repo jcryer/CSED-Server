@@ -32,7 +32,6 @@ function generateToken(res, id, firstname) {
         var token = jwt.sign({ id, firstname }, process.env.JWT_SECRET, {
             expiresIn: process.env.DB_ENV === 'testing' ? '1d' : '7d',
         });
-        console.log(token);
         resolve(token);
         resolve(res.cookie('token', token, {
             expires: new Date(Date.now() + expiration),
@@ -47,7 +46,6 @@ function addListenInfo(data, userid) {
         Listens.count({'songid': item.track.id, 'played': item.played_at}, function (err, count){ 
             if(count == 0) {
                 Listens.create({'userid': userid, 'songid': item.track.id, 'played': item.played_at}, function (err, instance) {
-                    console.log("song added!");
                     if (err) return handleError(err);
                 });
             }
@@ -81,7 +79,6 @@ function getYesterdayListenInfo(userid) {
                     listenMap.push(listen);
                 }
             });
-            console.log(listenMap);
             resolve(listenMap);
         });
     });
