@@ -228,14 +228,15 @@ const getRecentTracks = async function(username, userid) {
       });
     var data = (await spotifyApi.getTracks(listensIDs)).body.tracks;
 
-  }
-  console.log("1---");
-  console.log(tracks);
     for (var j = 0; j < data.length; j++) {
       data[j].listen = listens[stopped];
       tracks.push(data[j]);
       stopped += 1;
     }
+  }
+  
+  console.log("1---");
+  console.log(tracks);
   
   tracks = await getNonUniqueSortedTracksInfo(tracks);
   return tracks;
