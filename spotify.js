@@ -137,8 +137,10 @@ const getNonUniqueSortedTracksInfo = async function(tracks) {
 
   for (var i = 0; i < tracks.length; i++) {
     tracks[i].mood = tracksInfo[tracks[i].id];
-
   }
+  console.log("3---");
+  console.log(tracks);
+
   return tracks;
 }
 
@@ -227,6 +229,8 @@ const getRecentTracks = async function(username, userid) {
     var data = (await spotifyApi.getTracks(listensIDs)).body.tracks;
 
   }
+  console.log("1---");
+  console.log(tracks);
     for (var j = 0; j < data.length; j++) {
       data[j].listen = listens[stopped];
       tracks.push(data[j]);

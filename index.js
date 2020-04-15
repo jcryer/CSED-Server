@@ -95,6 +95,8 @@ router.post("/api/register", function (req, res, next) {
 router.get('/api/recentMoods', verifyToken, async function(req, res) {
   var data = await spotify.getRecentTracks(req.user.username, req.user.id);
   var output = "test<br><br>";
+  console.log("4---");
+  console.log(data);
   var out = [];
   for (var key in data) {
     var date = new Date(data[key].listen.played);
