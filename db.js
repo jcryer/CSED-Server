@@ -84,6 +84,23 @@ function getYesterdayListenInfo(userid) {
     });
 }
 
+function getTimePeriodListenInfo(userid) {
+    return new Promise(function(resolve, reject) {
+        Listens.find({'userid': userid}, function(err, listens) {
+            var yesterday = new Date(new Date().setDate(new Date().getDate() - 30));
+
+            var listenMap = [];
+            listens.forEach(function(listen) {
+                var date = new Date(listen.played);
+                if (date.getDate() == yesterday.getDate() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
+                    listenMap.push(listen);
+                }
+            });
+            resolve(listenMap);
+        });
+    });
+}
+
 function addUser(username, password) {
     return new Promise(function(resolve, reject) {
         argon2.hash(password).then((hash) => {
