@@ -92,7 +92,20 @@ router.post("/api/register", function (req, res, next) {
   //res.send("UH OH AGAIN");
 });
 
-router.get('/api/recentMoods', verifyToken, async function(req, res) {
+router.get('/api/yesterdayMood', verifyToken, async function(req, res) {
+  var data = await spotify.getRecentTracks(req.user.username, req.user.id);
+  var output = "test<br><br>";
+  var out = [];
+  for (var key in data) {
+    var date = new Date(data[key].listen.played);
+
+    out.push({'hour': date.getHours(), 'mood': data[key].mood});
+  }
+  res.send("<pre>" + JSON.stringify(out, null, "\t") + "</pre>");
+
+});
+
+router.get('/api/monthMood', verifyToken, async function(req, res) {
   var data = await spotify.getRecentTracks(req.user.username, req.user.id);
   var output = "test<br><br>";
   var out = [];
