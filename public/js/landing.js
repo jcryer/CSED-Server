@@ -92,7 +92,7 @@ $(document).ready(function() {
        //Does this have to be AJAX?
        //CHANGE THIS FOR PROD OR I WILL HURT YOU
        //THIS will have to change for the month view as well
-       $.get("/api/recentmoods", function(data, status) {
+       $.get("api/monthMood", function(data, status) {
            console.log(data);
        })
 

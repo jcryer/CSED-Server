@@ -101,7 +101,7 @@ router.get('/api/yesterdayMood', verifyToken, async function(req, res) {
 
     out.push({'hour': date.getHours(), 'mood': data[key].mood});
   }
-  res.send("<pre>" + JSON.stringify(out, null, "\t") + "</pre>");
+  res.send(JSON.stringify(out, null, "\t"));
 
 });
 
@@ -114,7 +114,7 @@ router.get('/api/monthMood', verifyToken, async function(req, res) {
 
     out.push({'hour': date.getHours(), 'mood': data[key].mood});
   }
-  res.send("<pre>" + JSON.stringify(out, null, "\t") + "</pre>");
+  res.send(JSON.stringify(out, null, "\t"));
 
 });
 
