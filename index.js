@@ -183,6 +183,7 @@ const moods = Object.freeze({0: "Neutral", 1: "Happy", 2: "Sad", 3: "Calm", 4: "
 router.get('/moodClassification', verifyToken, async function(req, res) {
   try {
   var data = await spotify.sortUserSongs(req.user.username, req.user.id);
+  console.log(data);
   }
   catch (err) {
     console.log(err);
