@@ -115,23 +115,30 @@ router.get('/api/monthMood', verifyToken, async function(req, res) {
 
 });
 
+
+router.get('/landing', verifyToken, async function(req, res) {
+  fs.readFile('public/landing.html', 'utf8', function(err, data) {
+    if (err) throw err;
+    res.send(data);
+  });
+});
+
 router.get('/connect', verifyToken, async function(req, res) {
  var scopes = 'user-read-playback-state streaming playlist-read-collaborative user-library-read user-modify-playback-state playlist-modify-public user-top-read user-read-currently-playing playlist-read-private user-follow-read user-read-recently-played playlist-modify-private ';
 
   var token = await database.getAuthToken(req.user.username);
-  res.send('<a href="https://accounts.spotify.com/authorize' 
-    + '?response_type=code' 
-    + '&client_id=' + my_client_id 
-    + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') 
-    + '&redirect_uri=' + encodeURIComponent(redirect_uri)
-    + '&state=' + token
-    + '">Login to Spotify here</a>');
+  res.redirect("https://accounts.spotify.com/authorize"
+  + '?response_type=code' 
+  + '&client_id=' + my_client_id 
+  + (scopes ? '&scope=' + encodeURIComponent(scopes) : '') 
+  + '&redirect_uri=' + encodeURIComponent(redirect_uri)
+  + '&state=' + token);
 });
   
   router.get('/callback', async function(req, res) {
     var data = await spotify.finaliseAuth(req.query.code);
     await database.updateAuthInfo(req.query.state, req.query.code, data);
-    res.redirect('landing.html');
+    res.redirect('landing');
   });
 
   router.get('/info', verifyToken, function(req, res) {

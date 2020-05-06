@@ -240,7 +240,7 @@ $(document).ready(function() {
                 console.log(data);
                 var chart = new google.visualization.PieChart(document.getElementById("library-pie"));
 
-                chart.draw(google.visualization.arrayToDataTable(data), {title : "Library"});
+                chart.draw(google.visualization.arrayToDataTable(data), {title : "Your Library mood breakdown"});
                 resolve();
             });
         });
