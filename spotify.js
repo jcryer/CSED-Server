@@ -10,67 +10,77 @@ var credentials = {
 
 var spotifyApi = new SpotifyWebApi(credentials);
 
-function finaliseAuth(authCode) {
-    return new Promise(function(resolve, reject) {
+async function finaliseAuth(authCode) {
+  var data = await spotifyApi.authorizationCodeGrant(authCode);
 
-      spotifyApi.authorizationCodeGrant(authCode).then(
-        function(data) {
-          console.log("Auth token: " + data.body['access_token']);
-  
-          console.log('The token expires in ' + data.body['expires_in']);
-          console.log('The access token is ' + data.body['access_token']);
-          console.log('The refresh token is ' + data.body['refresh_token']);
-
-          resolve(data.body['refresh_token']);
-        });
-  });
+  return data.body['refresh_token'];
 }
 
 const distinct = (value, index, self) => {
   return self.indexOf(value) === index;
 }
 
-const getTracksInfo = async function(username, userid) {
+/*
+const getRecentTracks = async function(username, userid) {
   await getAccessToken(username);
-  var listens = await database.getListenInfo(userid);
+  var listens = await database.getYesterdayListenInfo(userid);
+
+  tracks = [];
+  var stopped = 0;
+  for (var i = 0; i <= listens.length; i+=48) {
+      var listensIDs = listens.slice(i, i+48).map(function(item) {
+        return item['songid'];
+      });
+    var data = (await getTracks(listensIDs, 5)).body.tracks;
+
+    for (var j = 0; j < data.length; j++) {
+      data[j].listen = listens[stopped];
+      tracks.push(data[j]);
+      stopped += 1;
+    }
+  }
+*/
+
+const getDayListenInfo = async function(username, userid, day, accessToken) { // good(?)
+ setAccessToken(accessToken);
+  var listens = await database.getDayListenInfo(userid, day);
 
   trackIDs = [];
   tracks = [];
   var stopped = 0;
-  for (var i = 0; i < listens.length; i++) {
-    trackIDs.push(listens[i].songid);
-    if (i % 48 == 0 && i != 0) {
-      var tList = await spotifyApi.getTracks(trackIDs);
-      var actualList = tList.body.tracks;
-      for (var j = 0; j < actualList.length; j++) {
-        tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
-      }
 
-      stopped = i;
-      trackIDs = [];
+  for (var i = 0; i <= listens.length; i+=48) {
+    var listenIDs = listens.slice(i, i+48).map(function(item) {
+      return item['songid'];
+    });
+    var data = (await getTracks(listenIDs, 5)).body.tracks; 
+    // Need: ID, artwork, album, artist, track, url
+    for (var j = 0; j < data.length; j++) {
+      tracks.push({
+        'id': data[j].id, 
+        'artwork': data[j].album.images[2].url, 
+        'album': data[j].album.name, 
+        'artist': data[j].artists[0].name, 
+        'track': data[j].name,
+        'time': listens[stopped].played,
+        'url': data[j].uri
+      });
+      stopped += 1;
     }
   }
-
-  if (trackIDs.length > 0) {
-    var tList = await spotifyApi.getTracks(trackIDs);
-    var actualList = tList.body.tracks;
-    for (var j = 0; j < actualList.length; j++) {
-      tracks.push({'artist': actualList[j].artists[0].name, 'name': actualList[j].name, 'uri': actualList[j].uri, 'listen': listens[stopped + j] });
-    }
-  }
+  tracks = await getRecentTrackData(tracks);
   return tracks;
 }
 
-async function sortUserSongs(username, userid) {
-
-  await getAccessToken(username);
+async function sortUserSongs(accessToken) {
+ setAccessToken(accessToken);
 
   try {
     var allTracks = {};
     var playlistNext = true;
 
     while (playlistNext) {
-      var playlists = (await spotifyApi.getUserPlaylists({limit: 50})).body;
+      var playlists = (await getUserPlaylists(5)).body;
       if (playlists.next == null) {
         playlistNext = false;
       }
@@ -81,7 +91,7 @@ async function sortUserSongs(username, userid) {
         var trackNext = true;
         var offset = 0;
         while (trackNext) {
-          var tracks = (await getTracks(playlists.items[i].id, offset, 3)).body;
+          var tracks = (await getPlaylistTracks(playlists.items[i].id, offset, 5)).body;
           if (tracks.next == null) {
             trackNext = false;
           }
@@ -106,6 +116,7 @@ async function sortUserSongs(username, userid) {
     var offset = 0;
     while (likedNext) {
       var liked = (await getLikedTracks(offset, 3)).body;
+
       offset += 100;
       if (liked.next == null) {
         likedNext = false;
@@ -124,6 +135,7 @@ async function sortUserSongs(username, userid) {
   catch (e) {
     console.log(e);
   }
+
   allTracks = await getSortedTracksInfo(allTracks);
 
   return allTracks;
@@ -133,12 +145,38 @@ const getSortedTracksInfo = async function(tracks) {
   var keys = Object.keys(tracks);
 
   for (var i = 0; i <= keys.length; i+=48) {
-    var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
+    var data = (await getTracksFeatures(keys.slice(i, i+48), 5)).body.audio_features;
+
     for (var j = 0; j < data.length; j++) {
       tracks[data[j].id].mood = classify(data[j]);
       tracks[data[j].id].features = data[j];
     }
   }
+  return tracks;
+}
+
+const getRecentTrackData = async function(tracks) { // good
+  var keys = tracks.map(a => a.id);
+  for (var i = 0; i < tracks.length; i+=48) {
+    var data = (await getTracksFeatures(keys.slice(i, i+48), 5)).body.audio_features;
+    for (var j = 0; j < data.length; j++) {
+
+      var foundIndexes = [];
+
+      for (var x = 0; x < tracks.length; x++) {
+        if (tracks[x].id == data[j].id) {
+          foundIndexes.push(x);
+        }
+      }
+      
+      for (var l = 0; l < foundIndexes.length; l++) {
+        var c = classify(data[j]);
+        tracks[foundIndexes[l]].mood = c;
+      }
+    }
+
+  }
+
   return tracks;
 }
 
@@ -148,8 +186,8 @@ const getNonUniqueSortedTracksInfo = async function(tracks) {
   }).filter(distinct);
 
   var tracksInfo = {};
-  for (var i = 0; i <= keys.length; i+=48) {
-    var data = (await getTracksFeatures(keys.slice(i, i+48))).body.audio_features;
+  for (var i = 0; i < keys.length; i+=48) {
+    var data = (await getTracksFeatures(keys.slice(i, i+48), 5)).body.audio_features;
     for (var j = 0; j < data.length; j++) {
       tracksInfo[data[j].id] = classify(data[j]);
     }
@@ -161,59 +199,94 @@ const getNonUniqueSortedTracksInfo = async function(tracks) {
   return tracks;
 }
 
-function getAccessToken(username) {
-  return new Promise(function(resolve, reject) {
-    database.getRefreshToken(username).then(
-      function (token) {
-        spotifyApi.setRefreshToken(token);
-        spotifyApi.refreshAccessToken().then(
-          function(data) {
-            spotifyApi.setAccessToken(data.body['access_token']);
-            resolve(data.body['access_token']);
-          });
-        });
-      }
-    );
+async function getAccessToken(username) {
+  try {
+    var refreshToken = await database.getRefreshToken(username);
+    spotifyApi.setRefreshToken(refreshToken);
+    var data = await spotifyApi.refreshAccessToken();
+    return data.body['access_token'];
+  }
+  catch (err) {
+    return "false";
+  }
 } 
 
-function getData(username, userid) {
-  getAccessToken(username).then(
-    function () {
-      spotifyApi.getMyRecentlyPlayedTracks({ limit: 50 }).then(
-        function (data) {
-          database.addListenInfo(data.body.items, userid);
-        }
-      );
-    }
-  );
+function setAccessToken(accessToken) {
+  spotifyApi.setAccessToken(accessToken);
 }
 
-function dataListener() {
-  database.getUsers().then(
-    function (users) {
-      var filteredUsers = users.filter(
-        function (data) {
-          return data.refresh_token != null;
-        }
-      );
-      filteredUsers.forEach(
-        function(user) {
-          getData(user.username, user._id);
-        }
-      );
-    }
-  );
+const getData = async function(username, userid, accessToken) {
+  setAccessToken(accessToken);
+  var data = await getMyRecentlyPlayedTracks(5);
+  database.addListenInfo(data.body.items, userid);
 }
 
-const getTracks = async (id, offsetVal, retries) => {
+
+const dataListener = async function() {
+  try {
+    var users = await database.getUsers();
+    var filteredUsers = users.filter(function (data) {
+      return data.refresh_token != null;
+    });
+    filteredUsers.forEach(async function(user) {
+      var accessToken = await getAccessToken(user.username);
+      if (accessToken != "false") {
+        await getData(user.username, user._id, accessToken);
+      }
+    });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+const getMyRecentlyPlayedTracks = async (retries) => {
+  try {
+    const response = await spotifyApi.getMyRecentlyPlayedTracks({limit: 50});
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      await sleep(1000);
+      return getMyRecentlyPlayedTracks(retries);
+    }
+    throw e;
+  }
+};
+
+const getUserPlaylists = async (retries) => {
+  try {
+    const response = await spotifyApi.getUserPlaylists({limit: 50});
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      await sleep(1000);
+      return getUserPlaylists(retries);
+    }
+    throw e;
+  }
+};
+
+const getTracks = async (ids, retries) => {  
+  try {
+    const response = await spotifyApi.getTracks(ids, {});
+    return response;
+  } catch (e) {
+    if (retries > 0) {
+      await sleep(1000);
+      return getTracks(ids, retries - 1);
+    }
+    throw e;
+  }
+};
+
+const getPlaylistTracks = async (id, offsetVal, retries) => {
   try {
     const response = await spotifyApi.getPlaylistTracks(id, {limit: 100, offset: offsetVal, fields: 'next,items(track(name,artists, id))'});
     return response;
   } catch (e) {
     if (retries > 0) {
-      console.error(e);
       await sleep(1000);
-      return getTracks(id, offsetVal, retries - 1);
+      return getPlaylistTracks(id, offsetVal, retries - 1);
     }
     throw e;
   }
@@ -226,7 +299,6 @@ const getLikedTracks = async (offsetVal, retries) => {
     return response;
   } catch (e) {
     if (retries > 0) {
-      console.error(e);
       await sleep(1000);
       return getLikedTracks(offsetVal, retries - 1);
     }
@@ -240,7 +312,6 @@ const getTracksFeatures = async (ids, retries) => {
     return response;
   } catch (e) {
     if (retries > 0) {
-      console.error(e);
       await sleep(1000);
       return getTracksFeatures(ids, retries - 1);
     }
@@ -248,26 +319,27 @@ const getTracksFeatures = async (ids, retries) => {
   }
 };
 
-const getRecentTracks = async function(username, userid) {
-  await getAccessToken(username);
-  var listens = await database.getYesterdayListenInfo(userid);
-
+const getRecentTracks = async function(username, userid, date, accessToken) {
+  setAccessToken(accessToken);
+  var listens = await database.getDayListenInfo(userid, date);
   tracks = [];
   var stopped = 0;
   for (var i = 0; i <= listens.length; i+=48) {
       var listensIDs = listens.slice(i, i+48).map(function(item) {
         return item['songid'];
       });
-    var data = (await spotifyApi.getTracks(listensIDs)).body.tracks;
+      var t = await getTracks(listensIDs, 5);
 
+    var data = t.body.tracks;
     for (var j = 0; j < data.length; j++) {
       data[j].listen = listens[stopped];
       tracks.push(data[j]);
       stopped += 1;
     }
   }
-  
+
   tracks = await getNonUniqueSortedTracksInfo(tracks);
+
   return tracks;
 }
 
@@ -432,43 +504,17 @@ function classify (track) {
 
 }
 
-
 function sleep(millis) {
   return new Promise(resolve => setTimeout(resolve, millis));
 }
 
-setInterval(dataListener, 30000);
+setInterval(dataListener, 10000);
+
+module.exports.getAccessToken = getAccessToken;
 
 module.exports.sortUserSongs = sortUserSongs;
 
-module.exports.getTracksInfo = getTracksInfo;
+module.exports.getDayListenInfo = getDayListenInfo;
 module.exports.getData = getData;
 module.exports.finaliseAuth = finaliseAuth;
 module.exports.getRecentTracks = getRecentTracks;
-
-
-
- /*
-
-  spotifyApi.refreshAccessToken().then(
-      function(data) {
-        console.log("Auth token: " + data.body['access_token']);
-
-        console.log('The token expires in ' + data.body['expires_in']);
-        console.log('The access token is ' + data.body['access_token']);
-        console.log('The refresh token is ' + data.body['refresh_token']);
-    
-        spotifyApi.setAccessToken(data.body['access_token']);
-        spotifyApi.setRefreshToken(data.body['refresh_token']);
-        return spotifyApi.getMyRecentlyPlayedTracks();
-      },
-      function(err) {
-        console.log('Something went wrong!', err);
-      }
-  ).then(function(data) {
-    console.log('3::::: Retrieved recently played songs: ', data.body);
-    })
-    .catch(function(err) {
-      console.log('Something went wrong', err.message);
-    });
-    */

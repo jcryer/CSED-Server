@@ -26,23 +26,9 @@ var ListenSchema = new Schema({
 var Users = mongoose.model('Users', UserSchema );
 var Listens = mongoose.model('Listens', ListenSchema );
 
-function generateToken(res, id, firstname) {
-    return new Promise(function(resolve, reject) {
-        var expiration = process.env.DB_ENV === 'testing' ? 100 : 604800000;
-        var token = jwt.sign({ id, firstname }, process.env.JWT_SECRET, {
-            expiresIn: process.env.DB_ENV === 'testing' ? '1d' : '7d',
-        });
-        resolve(token);
-        resolve(res.cookie('token', token, {
-            expires: new Date(Date.now() + expiration),
-            secure: false,
-            httpOnly: true,
-        }));
-    });
-}
-
 function addListenInfo(data, userid) {
     data.forEach(function(item) {
+        try {
         Listens.count({'songid': item.track.id, 'played': item.played_at}, function (err, count){ 
             if(count == 0) {
                 Listens.create({'userid': userid, 'songid': item.track.id, 'played': item.played_at}, function (err, instance) {
@@ -50,32 +36,20 @@ function addListenInfo(data, userid) {
                 });
             }
         }); 
+    }
+    catch (e) {
+        console.log(e);
+    }
     });
 }
 
-
-function getListenInfo(userid) {
+function getDayListenInfo(userid, day) {
     return new Promise(function(resolve, reject) {
         Listens.find({'userid': userid}, function(err, listens) {
-
-            var listenMap = [];
-            listens.forEach(function(listen) {
-                listenMap.push(listen);
-            });
-            resolve(listenMap);
-        });
-    });
-}
-
-function getYesterdayListenInfo(userid) {
-    return new Promise(function(resolve, reject) {
-        Listens.find({'userid': userid}, function(err, listens) {
-            var yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
-
             var listenMap = [];
             listens.forEach(function(listen) {
                 var date = new Date(listen.played);
-                if (date.getDate() == yesterday.getDate() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
+                if (compareDates(date, day)) {
                     listenMap.push(listen);
                 }
             });
@@ -84,21 +58,11 @@ function getYesterdayListenInfo(userid) {
     });
 }
 
-function getTimePeriodListenInfo(userid) {
-    return new Promise(function(resolve, reject) {
-        Listens.find({'userid': userid}, function(err, listens) {
-            var yesterday = new Date(new Date().setDate(new Date().getDate() - 30));
-
-            var listenMap = [];
-            listens.forEach(function(listen) {
-                var date = new Date(listen.played);
-                if (date.getDate() == yesterday.getDate() && date.getMonth() == yesterday.getMonth() && date.getFullYear() == yesterday.getFullYear()) {
-                    listenMap.push(listen);
-                }
-            });
-            resolve(listenMap);
-        });
-    });
+function compareDates(a, b) {
+    if (a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear()) {
+        return true;
+    }
+    return false;
 }
 
 function addUser(username, password) {
@@ -113,6 +77,7 @@ function addUser(username, password) {
 }
 
 function getUsers() {
+    try {
     return new Promise(function(resolve, reject) {
         Users.find({}, function(err, users) {
             var userMap = [];
@@ -124,6 +89,12 @@ function getUsers() {
             resolve(userMap);
         });
     });
+
+  }
+  catch (err) {
+
+    console.log(err);
+  }
 }
 
 function makeid(length) {
@@ -199,11 +170,6 @@ function checkIfUserExists(username) {
     });
 }
 
-
-module.exports.generateToken = generateToken;
-
-module.exports.getListenInfo = getListenInfo;
-module.exports.getYesterdayListenInfo = getYesterdayListenInfo;
 module.exports.addUser = addUser;
 module.exports.addListenInfo = addListenInfo;
 
@@ -213,64 +179,4 @@ module.exports.getRefreshToken = getRefreshToken;
 module.exports.checkLoginDetails = checkLoginDetails;
 module.exports.updateAuthInfo = updateAuthInfo;
 module.exports.getAuthToken = getAuthToken;
-
-/*var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017";
-
-MongoClient.connect(url + "/mydb", {poolSize: 10}, function(err, db) {
-    if (err) throw err;
-    console.log("Database created!");
-
-    var dbo = db.db("mydb");
-
-    dbo.createCollection("customers", function(err2, res) {
-        if (err2) throw err2;
-        console.log("Collection created!");
-
-        var myobj = { name: "Company Inc", address: "Highway 37" };
-            dbo.collection("customers").insertOne(myobj, function(err3, res2) {
-            if (err3) throw err3;
-            console.log("1 document inserted");
-            dbo.collection("customers").findOne({}, function(err4, result) {
-                if (err4) throw err4;
-                console.log(result.name);
-              });
-        });
-    db.close();
-  });
-});
-
-MongoClient.connect(url, function(err, dbaa) {
-    if (err) throw err;
-    var dbo = db.db("mydb");
-
-    dbo.createCollection("customers", function(err2, res) {
-        if (err2) throw err2;
-        console.log("Collection created!");
-
-        var myobj = { name: "Company Inc", address: "Highway 37" };
-            dbo.collection("customers").insertOne(myobj, function(err3, res2) {
-            if (err3) throw err3;
-            console.log("1 document inserted");
-            dbo.collection("customers").findOne({}, function(err3, result) {
-                if (err) throw err;
-                console.log(result.name);
-              });
-        });
-    dbo.close();
-    });
-});
-
-
-
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("mydb");
-    var myobj = { name: "Company Inc", address: "Highway 37" };
-    dbo.collection("customers").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      console.log("1 document inserted");
-      db.close();
-    });
-  });
-  */
+module.exports.getDayListenInfo = getDayListenInfo;
