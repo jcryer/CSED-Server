@@ -72,6 +72,33 @@ const getDayListenInfo = async function(username, userid, day, accessToken) { //
   return tracks;
 }
 
+const getTopTen = async function(userid, accessToken) { // good(?)
+  setAccessToken(accessToken);
+  var listens = await database.getAllListenInfo(userid);
+  var sortable = [];
+  for (var listen in listens) {
+    sortable.push([listen, listens[listen]]);
+  }
+  sortable.sort(function(a, b) {
+      return b[1] - a[1];
+  });
+  var ids = []; // Contains top ten IDs
+  for (var i = 0; i < 10; i++) {
+    ids.push(sortable[i][0]);
+  }
+
+  console.log(ids);
+
+  var out = [];
+  var songInfo = (await getTracks(ids, 5)).body.tracks;
+
+  for (var i = 0; i < 10; i++) {
+    out.push({'id': songInfo[i].id, 'track': songInfo[i].name, 'listens': listens[songInfo[i].id], 'album': songInfo[i].album.name, 'artist': songInfo[i].artists[0].name });
+  }
+   out = await getRecentTrackData(out);
+   return out;
+ }
+
 async function sortUserSongs(accessToken) {
  setAccessToken(accessToken);
 
@@ -338,6 +365,7 @@ const getRecentTracks = async function(username, userid, date, accessToken) {
     }
   }
 
+
   tracks = await getNonUniqueSortedTracksInfo(tracks);
 
   return tracks;
@@ -518,3 +546,4 @@ module.exports.getDayListenInfo = getDayListenInfo;
 module.exports.getData = getData;
 module.exports.finaliseAuth = finaliseAuth;
 module.exports.getRecentTracks = getRecentTracks;
+module.exports.getTopTen = getTopTen;

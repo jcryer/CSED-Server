@@ -74,7 +74,7 @@ $(document).ready(function() {
         await drawDay(dayToDraw);
         //drawMonth();
         await drawLibraryPie();
-        drawLibraryList();
+        await drawLibraryList();
         await populateRecentTable();
 
     })
@@ -249,7 +249,7 @@ $(document).ready(function() {
 
     function drawLibraryList() {
         return new Promise(resolve => {
-
+/*
             //Get data here (or fake it)
             var datain = JSON.parse(`[
                 {"track" : "I Wanna Be Adored",
@@ -318,23 +318,28 @@ $(document).ready(function() {
                 "mood" : 10,
                 "listens" : 420}
             ]`);
+            */
 
-            //Create table
-            var data = new google.visualization.DataTable();
-            data.addColumn("string", "Song");
-            data.addColumn("string", "Album");
-            data.addColumn("string", "Artist");
-            data.addColumn("string", "Mood");
-            data.addColumn("number", "Listens");
+            $.get("api/topTen", function(x, status) {
+                var datain = JSON.parse(x);
 
-        
-            //Maps data into a format usable for dataTable then adds to table
-            data.addRows(datain.map(x => [x.track, x.album, x.artist, MOOD_LOOKUP[x.mood], x.listens]));
+                //Create table
+                var data = new google.visualization.DataTable();
+                data.addColumn("string", "Song");
+                data.addColumn("string", "Album");
+                data.addColumn("string", "Artist");
+                data.addColumn("string", "Mood");
+                data.addColumn("number", "Listens");
+
             
-            var table = new google.visualization.Table($("#library-table")[0])
+                //Maps data into a format usable for dataTable then adds to table
+                data.addRows(datain.map(x => [x.track, x.album, x.artist, MOOD_LOOKUP[x.mood], x.listens]));
+                
+                var table = new google.visualization.Table($("#library-table")[0])
 
-            table.draw(data, {width:"100%", height:"100%"});
-            resolve();
+                table.draw(data, {width:"100%", height:"100%"});
+                resolve();
+            });
         });
     }
 

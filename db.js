@@ -58,6 +58,23 @@ function getDayListenInfo(userid, day) {
     });
 }
 
+function getAllListenInfo(userid) {
+    return new Promise(function(resolve, reject) {
+        var count = {};
+        Listens.find({'userid': userid}, function(err, listens) {
+            listens.forEach(function(listen) {
+                if (listen.songid in count) {
+                    count[listen.songid] += 1;
+                }
+                else {
+                    count[listen.songid] = 1;
+                }
+            });
+            resolve(count);
+        });
+    });
+}
+
 function compareDates(a, b) {
     if (a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear()) {
         return true;
@@ -180,3 +197,4 @@ module.exports.checkLoginDetails = checkLoginDetails;
 module.exports.updateAuthInfo = updateAuthInfo;
 module.exports.getAuthToken = getAuthToken;
 module.exports.getDayListenInfo = getDayListenInfo;
+module.exports.getAllListenInfo = getAllListenInfo;

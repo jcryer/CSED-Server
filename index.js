@@ -102,6 +102,14 @@ router.get('/api/dayMood', verifyToken, async function(req, res) {
 
 });
 
+
+router.get('/api/topTen', verifyToken, async function(req, res) {
+  var data = await spotify.getTopTen(req.user.id, req.user.access_token);
+  
+  res.send(JSON.stringify(data));
+
+});
+
 router.get('/api/monthMood', verifyToken, async function(req, res) {
   var data = await spotify.getRecentTracks(req.user.username, req.user.id, req.user.access_token);
   var output = "test<br><br>";
