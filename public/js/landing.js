@@ -372,7 +372,7 @@ $(document).ready(function() {
                     let songObj = new Object();
 
                     //Add song to formatted data
-                    unordered[date.toDateString()].push([date.toLocaleTimeString(), song.artwork, song.url,
+                    unordered[date.toDateString()].push([date.toTimeString(), song.artwork, song.url,
                         song.track + " - " + song.album + " - " + song.artist + " - " + MOOD_LOOKUP[song.mood]]);
                 }
 
